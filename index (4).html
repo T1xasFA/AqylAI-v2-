@@ -1,0 +1,4754 @@
+<!doctype html>
+<html lang="kk" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AqylAI — Математика</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      * { box-sizing: border-box; }
+
+      :root {
+        --bg-deep: #050d14;
+        --bg-base: #080f17;
+        --bg-surface: #0d1a26;
+        --bg-card: #111f2e;
+        --bg-card2: #162435;
+        --accent: #10d4a0;
+        --accent-dim: #0aa880;
+        --accent-glow: rgba(16,212,160,0.2);
+        --accent2: #6366f1;
+        --accent2-glow: rgba(99,102,241,0.2);
+        --warn: #f59e0b;
+        --danger: #ef4444;
+        --text: #e2ecf4;
+        --text-muted: #7a96b0;
+        --text-dim: #3d5670;
+        --border: rgba(255,255,255,0.07);
+        --border-accent: rgba(16,212,160,0.25);
+      }
+
+      html { scroll-behavior: smooth; }
+      body {
+        font-family: 'Sora', sans-serif;
+        background: var(--bg-deep);
+        color: var(--text);
+        font-size: 15px;
+        line-height: 1.65;
+        overflow-x: hidden;
+      }
+
+      /* KaTeX */
+      .katex { font-size: 1em; }
+      .katex-display { margin: 0; }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: var(--bg-base); }
+      ::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+      /* Animations */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+        50% { box-shadow: 0 0 40px rgba(16,212,160,0.35); }
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      @keyframes orbit {
+        from { transform: rotate(0deg) translateX(160px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+      }
+      @keyframes shimmer {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+      }
+      @keyframes typing {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+        30% { transform: translateY(-6px); opacity: 1; }
+      }
+      @keyframes correctPop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateX(10px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes glowPulse {
+        0%,100% { opacity: 0.5; }
+        50% { opacity: 1; }
+      }
+
+      .fade-up { animation: fadeUp 0.5s ease forwards; }
+      .fade-in { animation: fadeIn 0.4s ease forwards; }
+      .float { animation: float 4s ease-in-out infinite; }
+
+      /* Grid bg */
+      .grid-bg {
+        background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                          linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      /* Glass card */
+      .glass {
+        background: rgba(13,26,38,0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+      }
+      .glass-bright {
+        background: rgba(17,31,46,0.85);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+
+      /* Accent button */
+      .btn-accent {
+        background: var(--accent);
+        color: #050d14;
+        font-weight: 700;
+        transition: all 0.2s;
+      }
+      .btn-accent:hover {
+        background: #14f2b4;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px var(--accent-glow);
+      }
+      .btn-accent:active { transform: translateY(0); }
+
+      /* Secondary button */
+      .btn-ghost {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        transition: all 0.2s;
+      }
+      .btn-ghost:hover {
+        background: rgba(255,255,255,0.1);
+        color: var(--text);
+        border-color: rgba(255,255,255,0.15);
+      }
+
+      /* Progress bar */
+      .progress-bar {
+        height: 4px;
+        border-radius: 2px;
+        background: var(--bg-card2);
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, var(--accent), #14f2b4);
+        transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* Message bubble */
+      .msg-user {
+        background: linear-gradient(135deg, rgba(16,212,160,0.15), rgba(16,212,160,0.08));
+        border: 1px solid rgba(16,212,160,0.2);
+        color: #c8f0e8;
+        animation: slideIn 0.25s ease;
+      }
+      .msg-ai {
+        background: rgba(22,36,53,0.9);
+        border: 1px solid var(--border);
+        color: var(--text);
+        animation: slideIn 0.25s ease;
+      }
+
+      /* Typing indicator */
+      .typing-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: typing 1.2s ease-in-out infinite;
+      }
+      .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+      .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+      /* Hero glow orbs */
+      .glow-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        pointer-events: none;
+      }
+
+      /* Shimmer text */
+      .shimmer-text {
+        background: linear-gradient(90deg, var(--accent), #6ee7d4, var(--accent));
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s linear infinite;
+      }
+
+      /* Stat card */
+      .stat-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px 24px;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .stat-card:hover {
+        border-color: var(--border-accent);
+        transform: translateY(-2px);
+      }
+
+      /* Topic card hover */
+      .topic-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        transition: all 0.25s;
+        cursor: pointer;
+      }
+      .topic-card:hover {
+        background: var(--bg-card2);
+        border-color: var(--border-accent);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      }
+
+      /* Correct/Wrong answer flash */
+      .answer-correct { animation: correctPop 0.4s ease; }
+
+      /* Level badge */
+      .badge-easy { background: rgba(16,212,160,0.12); color: var(--accent); border: 1px solid rgba(16,212,160,0.3); }
+      .badge-medium { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+      .badge-hard { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+      /* Nav active */
+      .nav-link {
+        position: relative;
+        color: var(--text-muted);
+        transition: color 0.2s;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .nav-link:hover { color: var(--text); }
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px; left: 50%; right: 50%;
+        height: 1px;
+        background: var(--accent);
+        transition: left 0.2s, right 0.2s;
+      }
+      .nav-link:hover::after { left: 0; right: 0; }
+
+      /* Feature card */
+      .feature-icon {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+        margin-bottom: 16px;
+      }
+
+      /* Input */
+      .input-field {
+        width: 100%;
+        background: rgba(8,15,23,0.8);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: 'Sora', sans-serif;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        outline: none;
+      }
+      .input-field:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(16,212,160,0.12);
+      }
+      .input-field::placeholder { color: var(--text-dim); }
+
+      /* Code/mono font */
+      .mono { font-family: 'JetBrains Mono', monospace; }
+
+      /* Orbit container */
+      .orbit-container {
+        position: relative;
+        width: 340px; height: 340px;
+      }
+      .orbit-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100px; height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(16,212,160,0.2), rgba(99,102,241,0.2));
+        border: 1px solid var(--border-accent);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 36px;
+      }
+      .orbit-ring {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        border: 1px dashed rgba(16,212,160,0.15);
+        transform: translate(-50%, -50%);
+      }
+      .orbit-item {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 52px; height: 52px;
+        border-radius: 12px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px;
+        color: var(--text);
+        animation: orbit linear infinite;
+        margin-left: -26px; margin-top: -26px;
+      }
+
+      /* Section transitions */
+      section { opacity: 1; }
+
+      /* Hero backdrop text */
+      .hero-bg-text {
+        font-size: clamp(80px, 15vw, 180px);
+        font-weight: 800;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(16,212,160,0.06);
+        letter-spacing: -0.02em;
+        pointer-events: none;
+        user-select: none;
+        line-height: 1;
+      }
+
+      /* Landing section snap removed for better scroll */
+      body { scroll-snap-type: none; }
+      section { scroll-snap-align: none; }
+    </style>
+  </head>
+  <body id="page" class="min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useMemo, useState, useEffect, useRef, useCallback } = React;
+      const PROFILE_NAME = "";
+
+      const TASK_BANK = {
+        7: {
+          linear_equations: {
+            title: "Сызықтық теңдеулер",
+
+            easy: [
+              { id: "7-l-e1", q: "x + 4 = 9", a: "5", difficulty: 1 },
+              { id: "7-l-e2", q: "x - 3 = 6", a: "9", difficulty: 1 },
+              { id: "7-l-e3", q: "2x = 14", a: "7", difficulty: 1 },
+              { id: "7-l-e4", q: "x/3 = 5", a: "15", difficulty: 1 },
+              { id: "7-l-e5", q: "7 + x = 10", a: "3", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "7-l-m1", q: "3x + 2 = 11", a: "3", difficulty: 2 },
+              { id: "7-l-m2", q: "4x - 5 = 11", a: "4", difficulty: 2 },
+              { id: "7-l-m3", q: "5x + 5 = 20", a: "3", difficulty: 2 },
+              { id: "7-l-m4", q: "6x - 6 = 12", a: "3", difficulty: 2 },
+              { id: "7-l-m5", q: "2x + 7 = 15", a: "4", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "7-l-h1", q: "3x + 4 = 2x + 9", a: "5", difficulty: 3 },
+              { id: "7-l-h2", q: "5x - 2 = 3x + 8", a: "5", difficulty: 3 },
+              { id: "7-l-h3", q: "4(x - 2) = 8", a: "4", difficulty: 3 },
+              { id: "7-l-h4", q: "2(3x - 1) = 10", a: "2", difficulty: 3 },
+              { id: "7-l-h5", q: "7x + 5 = 3x + 17", a: "3", difficulty: 3 },
+            ],
+          },
+
+          fractions: {
+            title: "Бөлшектер",
+
+            easy: [
+              {
+                id: "7-f-e1",
+                q: "\\frac{1}{2} + \\frac{1}{2}",
+                a: "1",
+                difficulty: 1,
+              },
+              {
+                id: "7-f-e2",
+                q: "\\frac{3}{4} - \\frac{1}{4}",
+                a: "1/2",
+                difficulty: 1,
+              },
+              {
+                id: "7-f-e3",
+                q: "\\frac{2}{5} + \\frac{1}{5}",
+                a: "3/5",
+                difficulty: 1,
+              },
+              { id: "7-f-e4", q: "\\frac{6}{10}", a: "3/5", difficulty: 1 },
+              { id: "7-f-e5", q: "\\frac{4}{8}", a: "1/2", difficulty: 1 },
+            ],
+
+            medium: [
+              {
+                id: "7-f-m1",
+                q: "\\frac{1}{3} + \\frac{1}{6}",
+                a: "1/2",
+                difficulty: 2,
+              },
+              {
+                id: "7-f-m2",
+                q: "\\frac{3}{5} - \\frac{1}{10}",
+                a: "1/2",
+                difficulty: 2,
+              },
+              {
+                id: "7-f-m3",
+                q: "\\frac{2}{3} + \\frac{1}{4}",
+                a: "11/12",
+                difficulty: 2,
+              },
+              {
+                id: "7-f-m4",
+                q: "\\frac{5}{6} - \\frac{1}{3}",
+                a: "1/2",
+                difficulty: 2,
+              },
+              {
+                id: "7-f-m5",
+                q: "\\frac{7}{8} + \\frac{1}{4}",
+                a: "9/8",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "7-f-h1",
+                q: "\\frac{3}{4} + \\frac{5}{6}",
+                a: "19/12",
+                difficulty: 3,
+              },
+              {
+                id: "7-f-h2",
+                q: "\\frac{5}{8} - \\frac{1}{3}",
+                a: "7/24",
+                difficulty: 3,
+              },
+              {
+                id: "7-f-h3",
+                q: "\\frac{2}{5} + \\frac{7}{10}",
+                a: "11/10",
+                difficulty: 3,
+              },
+              {
+                id: "7-f-h4",
+                q: "\\frac{9}{10} - \\frac{3}{5}",
+                a: "3/10",
+                difficulty: 3,
+              },
+              {
+                id: "7-f-h5",
+                q: "\\frac{4}{9} + \\frac{2}{3}",
+                a: "10/9",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          percentages: {
+            title: "Пайыз",
+
+            easy: [
+              {
+                id: "7-p-e1",
+                q: "20\\% \\text{ of } 100",
+                a: "20",
+                difficulty: 1,
+              },
+              {
+                id: "7-p-e2",
+                q: "50\\% \\text{ of } 60",
+                a: "30",
+                difficulty: 1,
+              },
+              {
+                id: "7-p-e3",
+                q: "10\\% \\text{ of } 90",
+                a: "9",
+                difficulty: 1,
+              },
+              {
+                id: "7-p-e4",
+                q: "25\\% \\text{ of } 80",
+                a: "20",
+                difficulty: 1,
+              },
+              {
+                id: "7-p-e5",
+                q: "5\\% \\text{ of } 200",
+                a: "10",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              {
+                id: "7-p-m1",
+                q: "15\\% \\text{ of } 200",
+                a: "30",
+                difficulty: 2,
+              },
+              {
+                id: "7-p-m2",
+                q: "35\\% \\text{ of } 400",
+                a: "140",
+                difficulty: 2,
+              },
+              {
+                id: "7-p-m3",
+                q: "12\\% \\text{ of } 150",
+                a: "18",
+                difficulty: 2,
+              },
+              {
+                id: "7-p-m4",
+                q: "45\\% \\text{ of } 80",
+                a: "36",
+                difficulty: 2,
+              },
+              {
+                id: "7-p-m5",
+                q: "18\\% \\text{ of } 50",
+                a: "9",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "7-p-h1",
+                q: "240 \\text{ саны 20\\% артты. Жаңа мәні?}",
+                a: "288",
+                difficulty: 3,
+              },
+              {
+                id: "7-p-h2",
+                q: "500 \\text{ саны 10\\% кеміді. Жаңа мәні?}",
+                a: "450",
+                difficulty: 3,
+              },
+              {
+                id: "7-p-h3",
+                q: "120 \\text{ саны 25\\% артты}",
+                a: "150",
+                difficulty: 3,
+              },
+              {
+                id: "7-p-h4",
+                q: "300 \\text{ саны 15\\% кеміді}",
+                a: "255",
+                difficulty: 3,
+              },
+              {
+                id: "7-p-h5",
+                q: "80 \\text{ саны 50\\% артты}",
+                a: "120",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          rational_numbers: {
+            title: "Рационал сандар",
+
+            easy: [
+              { id: "7-r-e1", q: "-5 + 3", a: "-2", difficulty: 1 },
+              { id: "7-r-e2", q: "7 - 10", a: "-3", difficulty: 1 },
+              { id: "7-r-e3", q: "|-8|", a: "8", difficulty: 1 },
+              { id: "7-r-e4", q: "-4 + (-6)", a: "-10", difficulty: 1 },
+              { id: "7-r-e5", q: "9 + (-2)", a: "7", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "7-r-m1", q: "-3 \\times 4", a: "-12", difficulty: 2 },
+              { id: "7-r-m2", q: "-18 \\div 3", a: "-6", difficulty: 2 },
+              { id: "7-r-m3", q: "-7 + 12 - 5", a: "0", difficulty: 2 },
+              { id: "7-r-m4", q: "-2 \\times (-5)", a: "10", difficulty: 2 },
+              { id: "7-r-m5", q: "(-10) + 4", a: "-6", difficulty: 2 },
+            ],
+
+            hard: [
+              {
+                id: "7-r-h1",
+                q: "-3 \\times (-4) + 5",
+                a: "17",
+                difficulty: 3,
+              },
+              { id: "7-r-h2", q: "-15 \\div (-3) - 2", a: "3", difficulty: 3 },
+              { id: "7-r-h3", q: "-8 + 3 \\times 2", a: "-2", difficulty: 3 },
+              { id: "7-r-h4", q: "(-6)^2", a: "36", difficulty: 3 },
+              { id: "7-r-h5", q: "-4^2", a: "-16", difficulty: 3 },
+            ],
+          },
+
+          expressions: {
+            title: "Өрнектер",
+
+            easy: [
+              { id: "7-ex-e1", q: "3x + 2x", a: "5x", difficulty: 1 },
+              { id: "7-ex-e2", q: "7a - 3a", a: "4a", difficulty: 1 },
+              { id: "7-ex-e3", q: "5(2 + 3)", a: "25", difficulty: 1 },
+              { id: "7-ex-e4", q: "4x + 6 - 2x", a: "2x + 6", difficulty: 1 },
+              { id: "7-ex-e5", q: "2(3x)", a: "6x", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "7-ex-m1", q: "3(x + 2)", a: "3x + 6", difficulty: 2 },
+              { id: "7-ex-m2", q: "5x - (2x - 3)", a: "3x + 3", difficulty: 2 },
+              { id: "7-ex-m3", q: "2a + 3a - a", a: "4a", difficulty: 2 },
+              { id: "7-ex-m4", q: "(x + 4) - (x - 2)", a: "6", difficulty: 2 },
+              { id: "7-ex-m5", q: "4(2x - 1)", a: "8x - 4", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "7-ex-h1", q: "2(x + 3) - x", a: "x + 6", difficulty: 3 },
+              { id: "7-ex-h2", q: "3(2x - 1) + x", a: "7x - 3", difficulty: 3 },
+              {
+                id: "7-ex-h3",
+                q: "(2x + 5) - (x + 2)",
+                a: "x + 3",
+                difficulty: 3,
+              },
+              { id: "7-ex-h4", q: "5(x - 2) + 3", a: "5x - 7", difficulty: 3 },
+              {
+                id: "7-ex-h5",
+                q: "4a - 2(3a - 1)",
+                a: "-2a + 2",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          powers: {
+            title: "Дәреже",
+
+            easy: [
+              { id: "7-pow-e1", q: "2^3", a: "8", difficulty: 1 },
+              { id: "7-pow-e2", q: "5^2", a: "25", difficulty: 1 },
+              { id: "7-pow-e3", q: "10^2", a: "100", difficulty: 1 },
+              { id: "7-pow-e4", q: "3^3", a: "27", difficulty: 1 },
+              { id: "7-pow-e5", q: "4^2", a: "16", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "7-pow-m1", q: "2^4", a: "16", difficulty: 2 },
+              { id: "7-pow-m2", q: "(-3)^2", a: "9", difficulty: 2 },
+              { id: "7-pow-m3", q: "5^3", a: "125", difficulty: 2 },
+              { id: "7-pow-m4", q: "6^2", a: "36", difficulty: 2 },
+              { id: "7-pow-m5", q: "(-2)^3", a: "-8", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "7-pow-h1", q: "2^3 \\times 2^2", a: "32", difficulty: 3 },
+              { id: "7-pow-h2", q: "3^2 + 4^2", a: "25", difficulty: 3 },
+              { id: "7-pow-h3", q: "5^3 - 5^2", a: "100", difficulty: 3 },
+              { id: "7-pow-h4", q: "2^5 \\div 2^2", a: "8", difficulty: 3 },
+              { id: "7-pow-h5", q: "10^3 - 10^2", a: "900", difficulty: 3 },
+            ],
+          },
+        },
+
+        8: {
+          square_roots: {
+            title: "Квадрат түбір",
+
+            easy: [
+              { id: "8-sr-e1", q: "\\sqrt{25}", a: "5", difficulty: 1 },
+              { id: "8-sr-e2", q: "\\sqrt{49}", a: "7", difficulty: 1 },
+              { id: "8-sr-e3", q: "\\sqrt{64}", a: "8", difficulty: 1 },
+              { id: "8-sr-e4", q: "\\sqrt{81}", a: "9", difficulty: 1 },
+              { id: "8-sr-e5", q: "\\sqrt{100}", a: "10", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "8-sr-m1", q: "2\\sqrt{9}", a: "6", difficulty: 2 },
+              { id: "8-sr-m2", q: "\\sqrt{36}+4", a: "10", difficulty: 2 },
+              { id: "8-sr-m3", q: "3\\sqrt{16}", a: "12", difficulty: 2 },
+              { id: "8-sr-m4", q: "\\sqrt{144}-5", a: "7", difficulty: 2 },
+              { id: "8-sr-m5", q: "4\\sqrt{25}", a: "20", difficulty: 2 },
+            ],
+
+            hard: [
+              {
+                id: "8-sr-h1",
+                q: "\\sqrt{81}+\\sqrt{16}",
+                a: "13",
+                difficulty: 3,
+              },
+              {
+                id: "8-sr-h2",
+                q: "\\sqrt{100}-\\sqrt{36}",
+                a: "4",
+                difficulty: 3,
+              },
+              { id: "8-sr-h3", q: "2\\sqrt{49}-3", a: "11", difficulty: 3 },
+              { id: "8-sr-h4", q: "5+\\sqrt{121}", a: "16", difficulty: 3 },
+              { id: "8-sr-h5", q: "\\sqrt{196}-8", a: "6", difficulty: 3 },
+            ],
+          },
+
+          quadratic_equations: {
+            title: "Квадрат теңдеулер",
+
+            easy: [
+              { id: "8-qe-e1", q: "x^2=16", a: "4", difficulty: 1 },
+              { id: "8-qe-e2", q: "x^2=9", a: "3", difficulty: 1 },
+              { id: "8-qe-e3", q: "x^2=25", a: "5", difficulty: 1 },
+              { id: "8-qe-e4", q: "x^2=49", a: "7", difficulty: 1 },
+              { id: "8-qe-e5", q: "x^2=64", a: "8", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "8-qe-m1", q: "x^2-4=0", a: "2", difficulty: 2 },
+              { id: "8-qe-m2", q: "x^2-9=0", a: "3", difficulty: 2 },
+              { id: "8-qe-m3", q: "x^2-16=0", a: "4", difficulty: 2 },
+              { id: "8-qe-m4", q: "x^2-25=0", a: "5", difficulty: 2 },
+              { id: "8-qe-m5", q: "x^2-36=0", a: "6", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "8-qe-h1", q: "x^2-5x+6=0", a: "2", difficulty: 3 },
+              { id: "8-qe-h2", q: "x^2-7x+10=0", a: "2", difficulty: 3 },
+              { id: "8-qe-h3", q: "x^2-9x+20=0", a: "4", difficulty: 3 },
+              { id: "8-qe-h4", q: "x^2-6x+8=0", a: "2", difficulty: 3 },
+              { id: "8-qe-h5", q: "x^2-4x+3=0", a: "1", difficulty: 3 },
+            ],
+          },
+
+          linear_function: {
+            title: "Сызықтық функция",
+
+            easy: [
+              { id: "8-lf-e1", q: "f(x)=2x, f(3)=?", a: "6", difficulty: 1 },
+              { id: "8-lf-e2", q: "f(x)=x+5, f(4)=?", a: "9", difficulty: 1 },
+              { id: "8-lf-e3", q: "f(x)=3x, f(2)=?", a: "6", difficulty: 1 },
+              { id: "8-lf-e4", q: "f(x)=x-2, f(5)=?", a: "3", difficulty: 1 },
+              { id: "8-lf-e5", q: "f(x)=4x, f(1)=?", a: "4", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "8-lf-m1", q: "y=2x+1, x=3", a: "7", difficulty: 2 },
+              { id: "8-lf-m2", q: "y=3x-2, x=4", a: "10", difficulty: 2 },
+              { id: "8-lf-m3", q: "y=5x+1, x=2", a: "11", difficulty: 2 },
+              { id: "8-lf-m4", q: "y=4x-3, x=5", a: "17", difficulty: 2 },
+              { id: "8-lf-m5", q: "y=6x+2, x=1", a: "8", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "8-lf-h1", q: "y=2x+3, x=7", a: "17", difficulty: 3 },
+              { id: "8-lf-h2", q: "y=5x-4, x=6", a: "26", difficulty: 3 },
+              { id: "8-lf-h3", q: "y=3x+5, x=8", a: "29", difficulty: 3 },
+              { id: "8-lf-h4", q: "y=7x-1, x=4", a: "27", difficulty: 3 },
+              { id: "8-lf-h5", q: "y=4x+9, x=3", a: "21", difficulty: 3 },
+            ],
+          },
+
+          quadratic_trinomial: {
+            title: "Квадрат үшмүше",
+
+            easy: [
+              {
+                id: "8-qt-e1",
+                q: "x^2 + 2x + 1",
+                a: "complete",
+                difficulty: 1,
+              },
+              {
+                id: "8-qt-e2",
+                q: "x^2 + 4x + 4",
+                a: "complete",
+                difficulty: 1,
+              },
+              {
+                id: "8-qt-e3",
+                q: "x^2 + 6x + 9",
+                a: "complete",
+                difficulty: 1,
+              },
+              {
+                id: "8-qt-e4",
+                q: "x^2 - 4x + 4",
+                a: "complete",
+                difficulty: 1,
+              },
+              {
+                id: "8-qt-e5",
+                q: "x^2 - 6x + 9",
+                a: "complete",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              { id: "8-qt-m1", q: "(x+2)^2", a: "x^2+4x+4", difficulty: 2 },
+              { id: "8-qt-m2", q: "(x+3)^2", a: "x^2+6x+9", difficulty: 2 },
+              { id: "8-qt-m3", q: "(x-4)^2", a: "x^2-8x+16", difficulty: 2 },
+              { id: "8-qt-m4", q: "(x+5)^2", a: "x^2+10x+25", difficulty: 2 },
+              { id: "8-qt-m5", q: "(x-2)^2", a: "x^2-4x+4", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "8-qt-h1", q: "x^2+5x+6", a: "factor", difficulty: 3 },
+              { id: "8-qt-h2", q: "x^2+7x+10", a: "factor", difficulty: 3 },
+              { id: "8-qt-h3", q: "x^2-3x-10", a: "factor", difficulty: 3 },
+              { id: "8-qt-h4", q: "x^2-5x+6", a: "factor", difficulty: 3 },
+              { id: "8-qt-h5", q: "x^2+9x+20", a: "factor", difficulty: 3 },
+            ],
+          },
+
+          statistics: {
+            title: "Статистика",
+
+            easy: [
+              { id: "8-st-e1", q: "Орташа мән: 2,4,6", a: "4", difficulty: 1 },
+              { id: "8-st-e2", q: "Орташа мән: 5,5,5", a: "5", difficulty: 1 },
+              { id: "8-st-e3", q: "Орташа мән: 1,2,3", a: "2", difficulty: 1 },
+              {
+                id: "8-st-e4",
+                q: "Орташа мән: 10,20,30",
+                a: "20",
+                difficulty: 1,
+              },
+              { id: "8-st-e5", q: "Орташа мән: 3,6,9", a: "6", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "8-st-m1", q: "Медиана: 1,3,5", a: "3", difficulty: 2 },
+              { id: "8-st-m2", q: "Медиана: 2,4,6,8", a: "5", difficulty: 2 },
+              { id: "8-st-m3", q: "Мода: 2,2,3,4", a: "2", difficulty: 2 },
+              { id: "8-st-m4", q: "Мода: 1,3,3,5", a: "3", difficulty: 2 },
+              { id: "8-st-m5", q: "Медиана: 5,7,9", a: "7", difficulty: 2 },
+            ],
+
+            hard: [
+              {
+                id: "8-st-h1",
+                q: "Орташа мән: 5,10,15,20",
+                a: "12.5",
+                difficulty: 3,
+              },
+              {
+                id: "8-st-h2",
+                q: "Орташа мән: 2,4,6,8",
+                a: "5",
+                difficulty: 3,
+              },
+              {
+                id: "8-st-h3",
+                q: "Орташа мән: 1,3,5,7,9",
+                a: "5",
+                difficulty: 3,
+              },
+              {
+                id: "8-st-h4",
+                q: "Медиана: 4,8,12,16",
+                a: "10",
+                difficulty: 3,
+              },
+              { id: "8-st-h5", q: "Мода: 1,1,2,3,3,3", a: "3", difficulty: 3 },
+            ],
+          },
+
+          probability: {
+            title: "Ықтималдық",
+
+            easy: [
+              {
+                id: "8-pr-e1",
+                q: "Тиын лақтыру. P(герб)?",
+                a: "1/2",
+                difficulty: 1,
+              },
+              {
+                id: "8-pr-e2",
+                q: "6 қырлы кубик. P(1)?",
+                a: "1/6",
+                difficulty: 1,
+              },
+              {
+                id: "8-pr-e3",
+                q: "6 қырлы кубик. P(жұп)?",
+                a: "1/2",
+                difficulty: 1,
+              },
+              {
+                id: "8-pr-e4",
+                q: "10 билет, 1 ұтыс. P?",
+                a: "1/10",
+                difficulty: 1,
+              },
+              {
+                id: "8-pr-e5",
+                q: "5 қыз, 5 ұл. P(қыз)?",
+                a: "1/2",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              { id: "8-pr-m1", q: "Кубик. P(>4)?", a: "1/3", difficulty: 2 },
+              { id: "8-pr-m2", q: "Кубик. P(<3)?", a: "1/3", difficulty: 2 },
+              {
+                id: "8-pr-m3",
+                q: "Кубик. P(3 немесе 6)?",
+                a: "1/3",
+                difficulty: 2,
+              },
+              { id: "8-pr-m4", q: "Кубик. P(тақ)?", a: "1/2", difficulty: 2 },
+              {
+                id: "8-pr-m5",
+                q: "4 қыз, 2 ұл. P(ұл)?",
+                a: "1/3",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "8-pr-h1",
+                q: "2 тиын. P(2 герб)?",
+                a: "1/4",
+                difficulty: 3,
+              },
+              {
+                id: "8-pr-h2",
+                q: "2 кубик. P(қосынды=7)?",
+                a: "1/6",
+                difficulty: 3,
+              },
+              {
+                id: "8-pr-h3",
+                q: "Кубик. P(1 немесе 2)?",
+                a: "1/3",
+                difficulty: 3,
+              },
+              {
+                id: "8-pr-h4",
+                q: "8 билет, 2 ұтыс. P?",
+                a: "1/4",
+                difficulty: 3,
+              },
+              {
+                id: "8-pr-h5",
+                q: "3 тиын. P(3 герб)?",
+                a: "1/8",
+                difficulty: 3,
+              },
+            ],
+          },
+        },
+
+        9: {
+          quadratic_equations: {
+            title: "Квадрат теңдеулер",
+
+            easy: [
+              { id: "9-qe-e1", q: "x^2=9", a: "3", difficulty: 1 },
+              { id: "9-qe-e2", q: "x^2=16", a: "4", difficulty: 1 },
+              { id: "9-qe-e3", q: "x^2=25", a: "5", difficulty: 1 },
+              { id: "9-qe-e4", q: "x^2=49", a: "7", difficulty: 1 },
+              { id: "9-qe-e5", q: "x^2=64", a: "8", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "9-qe-m1", q: "x^2-4=0", a: "2", difficulty: 2 },
+              { id: "9-qe-m2", q: "x^2-9=0", a: "3", difficulty: 2 },
+              { id: "9-qe-m3", q: "x^2-5x+6=0", a: "2", difficulty: 2 },
+              { id: "9-qe-m4", q: "x^2-7x+10=0", a: "2", difficulty: 2 },
+              { id: "9-qe-m5", q: "x^2-6x+8=0", a: "2", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "9-qe-h1", q: "2x^2-7x+3=0", a: "3", difficulty: 3 },
+              { id: "9-qe-h2", q: "x^2-9x+20=0", a: "4", difficulty: 3 },
+              { id: "9-qe-h3", q: "x^2-4x+3=0", a: "1", difficulty: 3 },
+              { id: "9-qe-h4", q: "x^2-10x+25=0", a: "5", difficulty: 3 },
+              { id: "9-qe-h5", q: "x^2-3x-10=0", a: "5", difficulty: 3 },
+            ],
+          },
+
+          quadratic_function: {
+            title: "Квадрат функция",
+
+            easy: [
+              { id: "9-qf-e1", q: "y=x^2, x=3", a: "9", difficulty: 1 },
+              { id: "9-qf-e2", q: "y=x^2, x=4", a: "16", difficulty: 1 },
+              { id: "9-qf-e3", q: "y=x^2, x=5", a: "25", difficulty: 1 },
+              { id: "9-qf-e4", q: "y=x^2, x=6", a: "36", difficulty: 1 },
+              { id: "9-qf-e5", q: "y=x^2, x=7", a: "49", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "9-qf-m1", q: "y=x^2-4, x=3", a: "5", difficulty: 2 },
+              { id: "9-qf-m2", q: "y=x^2+1, x=4", a: "17", difficulty: 2 },
+              { id: "9-qf-m3", q: "y=x^2-9, x=5", a: "16", difficulty: 2 },
+              { id: "9-qf-m4", q: "y=x^2-16, x=6", a: "20", difficulty: 2 },
+              { id: "9-qf-m5", q: "y=x^2+4, x=2", a: "8", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "9-qf-h1", q: "y=2x^2, x=3", a: "18", difficulty: 3 },
+              { id: "9-qf-h2", q: "y=3x^2-1, x=4", a: "47", difficulty: 3 },
+              { id: "9-qf-h3", q: "y=2x^2+3, x=5", a: "53", difficulty: 3 },
+              { id: "9-qf-h4", q: "y=4x^2-2, x=3", a: "34", difficulty: 3 },
+              { id: "9-qf-h5", q: "y=5x^2+1, x=2", a: "21", difficulty: 3 },
+            ],
+          },
+
+          arithmetic_progression: {
+            title: "Арифметикалық прогрессия",
+
+            easy: [
+              { id: "9-ap-e1", q: "2,4,6,... a4=?", a: "8", difficulty: 1 },
+              { id: "9-ap-e2", q: "5,8,11,... a4=?", a: "14", difficulty: 1 },
+              { id: "9-ap-e3", q: "1,3,5,... a5=?", a: "9", difficulty: 1 },
+              { id: "9-ap-e4", q: "10,12,14,... a4=?", a: "16", difficulty: 1 },
+              { id: "9-ap-e5", q: "7,9,11,... a4=?", a: "13", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "9-ap-m1", q: "a1=2,d=3,a5=?", a: "14", difficulty: 2 },
+              { id: "9-ap-m2", q: "a1=5,d=2,a6=?", a: "15", difficulty: 2 },
+              { id: "9-ap-m3", q: "a1=1,d=4,a4=?", a: "13", difficulty: 2 },
+              { id: "9-ap-m4", q: "a1=3,d=5,a3=?", a: "13", difficulty: 2 },
+              { id: "9-ap-m5", q: "a1=10,d=10,a3=?", a: "30", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "9-ap-h1", q: "a1=2,d=3,a10=?", a: "29", difficulty: 3 },
+              { id: "9-ap-h2", q: "a1=5,d=4,a8=?", a: "33", difficulty: 3 },
+              { id: "9-ap-h3", q: "a1=1,d=6,a7=?", a: "37", difficulty: 3 },
+              { id: "9-ap-h4", q: "a1=3,d=2,a12=?", a: "25", difficulty: 3 },
+              { id: "9-ap-h5", q: "a1=7,d=5,a9=?", a: "47", difficulty: 3 },
+            ],
+          },
+          geometric_progression: {
+            title: "Геометриялық прогрессия",
+
+            easy: [
+              { id: "9-gp-e1", q: "2,4,8,... a4=?", a: "16", difficulty: 1 },
+              { id: "9-gp-e2", q: "3,6,12,... a4=?", a: "24", difficulty: 1 },
+              { id: "9-gp-e3", q: "5,10,20,... a4=?", a: "40", difficulty: 1 },
+              { id: "9-gp-e4", q: "1,2,4,... a5=?", a: "16", difficulty: 1 },
+              { id: "9-gp-e5", q: "4,8,16,... a4=?", a: "32", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "9-gp-m1", q: "a1=2,q=3,a4=?", a: "54", difficulty: 2 },
+              { id: "9-gp-m2", q: "a1=5,q=2,a5=?", a: "80", difficulty: 2 },
+              { id: "9-gp-m3", q: "a1=3,q=4,a3=?", a: "48", difficulty: 2 },
+              { id: "9-gp-m4", q: "a1=2,q=5,a3=?", a: "50", difficulty: 2 },
+              { id: "9-gp-m5", q: "a1=1,q=10,a3=?", a: "100", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "9-gp-h1", q: "a1=2,q=2,a6=?", a: "64", difficulty: 3 },
+              { id: "9-gp-h2", q: "a1=3,q=3,a5=?", a: "243", difficulty: 3 },
+              { id: "9-gp-h3", q: "a1=5,q=2,a7=?", a: "320", difficulty: 3 },
+              { id: "9-gp-h4", q: "a1=4,q=3,a4=?", a: "108", difficulty: 3 },
+              { id: "9-gp-h5", q: "a1=2,q=4,a4=?", a: "128", difficulty: 3 },
+            ],
+          },
+          inequalities: {
+            title: "Теңсіздіктер",
+
+            easy: [
+              { id: "9-in-e1", q: "x+3>5", a: "2", difficulty: 1 },
+              { id: "9-in-e2", q: "x-2>3", a: "5", difficulty: 1 },
+              { id: "9-in-e3", q: "x+4<10", a: "6", difficulty: 1 },
+              { id: "9-in-e4", q: "2x>8", a: "4", difficulty: 1 },
+              { id: "9-in-e5", q: "3x>9", a: "3", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "9-in-m1", q: "2x+3>7", a: "2", difficulty: 2 },
+              { id: "9-in-m2", q: "3x-4>5", a: "3", difficulty: 2 },
+              { id: "9-in-m3", q: "4x+2<10", a: "2", difficulty: 2 },
+              { id: "9-in-m4", q: "5x-5>0", a: "1", difficulty: 2 },
+              { id: "9-in-m5", q: "6x+6>18", a: "2", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "9-in-h1", q: "2x-5>3", a: "4", difficulty: 3 },
+              { id: "9-in-h2", q: "3x+2<14", a: "4", difficulty: 3 },
+              { id: "9-in-h3", q: "5x-10>0", a: "2", difficulty: 3 },
+              { id: "9-in-h4", q: "4x+8<20", a: "3", difficulty: 3 },
+              { id: "9-in-h5", q: "7x-14>0", a: "2", difficulty: 3 },
+            ],
+          },
+          systems: {
+            title: "Жүйелер",
+
+            easy: [
+              { id: "9-sys-e1", q: "x=2,y=3 → x+y=?", a: "5", difficulty: 1 },
+              { id: "9-sys-e2", q: "x=4,y=5 → x+y=?", a: "9", difficulty: 1 },
+              { id: "9-sys-e3", q: "x=3,y=7 → x+y=?", a: "10", difficulty: 1 },
+              { id: "9-sys-e4", q: "x=6,y=1 → x+y=?", a: "7", difficulty: 1 },
+              { id: "9-sys-e5", q: "x=8,y=2 → x+y=?", a: "10", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "9-sys-m1", q: "x+y=5,x=2 → y=?", a: "3", difficulty: 2 },
+              { id: "9-sys-m2", q: "x+y=10,x=4 → y=?", a: "6", difficulty: 2 },
+              { id: "9-sys-m3", q: "x+y=7,x=3 → y=?", a: "4", difficulty: 2 },
+              { id: "9-sys-m4", q: "x+y=12,x=5 → y=?", a: "7", difficulty: 2 },
+              { id: "9-sys-m5", q: "x+y=9,x=6 → y=?", a: "3", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "9-sys-h1", q: "x+y=5,x-y=1 → x=?", a: "3", difficulty: 3 },
+              {
+                id: "9-sys-h2",
+                q: "x+y=10,x-y=2 → x=?",
+                a: "6",
+                difficulty: 3,
+              },
+              { id: "9-sys-h3", q: "x+y=8,x-y=4 → x=?", a: "6", difficulty: 3 },
+              {
+                id: "9-sys-h4",
+                q: "x+y=12,x-y=6 → x=?",
+                a: "9",
+                difficulty: 3,
+              },
+              {
+                id: "9-sys-h5",
+                q: "x+y=14,x-y=2 → x=?",
+                a: "8",
+                difficulty: 3,
+              },
+            ],
+          },
+        },
+
+        10: {
+          derivatives: {
+            title: "Туынды",
+
+            easy: [
+              {
+                id: "10-der-e1",
+                q: "\\frac{d}{dx}(x^2)",
+                a: "2x",
+                difficulty: 1,
+              },
+              {
+                id: "10-der-e2",
+                q: "\\frac{d}{dx}(x^3)",
+                a: "3x^2",
+                difficulty: 1,
+              },
+              {
+                id: "10-der-e3",
+                q: "\\frac{d}{dx}(5x)",
+                a: "5",
+                difficulty: 1,
+              },
+              { id: "10-der-e4", q: "\\frac{d}{dx}(7)", a: "0", difficulty: 1 },
+              {
+                id: "10-der-e5",
+                q: "\\frac{d}{dx}(4x^2)",
+                a: "8x",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              {
+                id: "10-der-m1",
+                q: "\\frac{d}{dx}(3x^3)",
+                a: "9x^2",
+                difficulty: 2,
+              },
+              {
+                id: "10-der-m2",
+                q: "\\frac{d}{dx}(2x^4)",
+                a: "8x^3",
+                difficulty: 2,
+              },
+              {
+                id: "10-der-m3",
+                q: "\\frac{d}{dx}(5x^2+3x)",
+                a: "10x+3",
+                difficulty: 2,
+              },
+              {
+                id: "10-der-m4",
+                q: "\\frac{d}{dx}(x^5)",
+                a: "5x^4",
+                difficulty: 2,
+              },
+              {
+                id: "10-der-m5",
+                q: "\\frac{d}{dx}(6x^3-2x)",
+                a: "18x^2-2",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "10-der-h1",
+                q: "\\frac{d}{dx}(x^4+3x^2)",
+                a: "4x^3+6x",
+                difficulty: 3,
+              },
+              {
+                id: "10-der-h2",
+                q: "\\frac{d}{dx}(2x^5-4x^3)",
+                a: "10x^4-12x^2",
+                difficulty: 3,
+              },
+              {
+                id: "10-der-h3",
+                q: "\\frac{d}{dx}(7x^3+5)",
+                a: "21x^2",
+                difficulty: 3,
+              },
+              {
+                id: "10-der-h4",
+                q: "\\frac{d}{dx}(3x^4-6x^2+2)",
+                a: "12x^3-12x",
+                difficulty: 3,
+              },
+              {
+                id: "10-der-h5",
+                q: "\\frac{d}{dx}(5x^6)",
+                a: "30x^5",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          logarithms: {
+            title: "Логарифмдер",
+
+            easy: [
+              { id: "10-log-e1", q: "\\log_{10} 100", a: "2", difficulty: 1 },
+              { id: "10-log-e2", q: "\\log_{2} 8", a: "3", difficulty: 1 },
+              { id: "10-log-e3", q: "\\log_{5} 25", a: "2", difficulty: 1 },
+              { id: "10-log-e4", q: "\\log_{3} 9", a: "2", difficulty: 1 },
+              { id: "10-log-e5", q: "\\log_{4} 16", a: "2", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "10-log-m1", q: "\\log_{2} 32", a: "5", difficulty: 2 },
+              { id: "10-log-m2", q: "\\log_{3} 27", a: "3", difficulty: 2 },
+              { id: "10-log-m3", q: "\\log_{10} 1000", a: "3", difficulty: 2 },
+              { id: "10-log-m4", q: "\\log_{5} 125", a: "3", difficulty: 2 },
+              { id: "10-log-m5", q: "\\log_{7} 49", a: "2", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "10-log-h1", q: "\\log_{2} 64 + 1", a: "7", difficulty: 3 },
+              { id: "10-log-h2", q: "\\log_{3} 81 - 1", a: "3", difficulty: 3 },
+              { id: "10-log-h3", q: "2\\log_{2} 8", a: "6", difficulty: 3 },
+              { id: "10-log-h4", q: "\\log_{4} 64", a: "3", difficulty: 3 },
+              { id: "10-log-h5", q: "\\log_{9} 81", a: "2", difficulty: 3 },
+            ],
+          },
+
+          trigonometry: {
+            title: "Тригонометрия",
+
+            easy: [
+              { id: "10-tr-e1", q: "\\sin 90^\\circ", a: "1", difficulty: 1 },
+              { id: "10-tr-e2", q: "\\cos 0^\\circ", a: "1", difficulty: 1 },
+              { id: "10-tr-e3", q: "\\tan 45^\\circ", a: "1", difficulty: 1 },
+              { id: "10-tr-e4", q: "\\sin 30^\\circ", a: "1/2", difficulty: 1 },
+              { id: "10-tr-e5", q: "\\cos 60^\\circ", a: "1/2", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "10-tr-m1", q: "2\\sin 30^\\circ", a: "1", difficulty: 2 },
+              {
+                id: "10-tr-m2",
+                q: "\\cos 45^\\circ",
+                a: "√2/2",
+                difficulty: 2,
+              },
+              { id: "10-tr-m3", q: "\\sin^2 90^\\circ", a: "1", difficulty: 2 },
+              { id: "10-tr-m4", q: "\\tan 60^\\circ", a: "√3", difficulty: 2 },
+              { id: "10-tr-m5", q: "\\cos^2 0^\\circ", a: "1", difficulty: 2 },
+            ],
+
+            hard: [
+              {
+                id: "10-tr-h1",
+                q: "\\sin^2 30^\\circ",
+                a: "1/4",
+                difficulty: 3,
+              },
+              {
+                id: "10-tr-h2",
+                q: "1-\\cos^2 60^\\circ",
+                a: "3/4",
+                difficulty: 3,
+              },
+              {
+                id: "10-tr-h3",
+                q: "\\sin 45^\\circ \\cdot \\cos 45^\\circ",
+                a: "1/2",
+                difficulty: 3,
+              },
+              {
+                id: "10-tr-h4",
+                q: "\\tan 45^\\circ + 1",
+                a: "2",
+                difficulty: 3,
+              },
+              {
+                id: "10-tr-h5",
+                q: "\\sin 60^\\circ",
+                a: "√3/2",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          sequences: {
+            title: "Тізбектер",
+
+            easy: [
+              { id: "10-seq-e1", q: "2,4,6,... a4=?", a: "8", difficulty: 1 },
+              { id: "10-seq-e2", q: "1,3,5,... a5=?", a: "9", difficulty: 1 },
+              { id: "10-seq-e3", q: "3,6,9,... a4=?", a: "12", difficulty: 1 },
+              {
+                id: "10-seq-e4",
+                q: "5,10,15,... a4=?",
+                a: "20",
+                difficulty: 1,
+              },
+              {
+                id: "10-seq-e5",
+                q: "7,14,21,... a4=?",
+                a: "28",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              { id: "10-seq-m1", q: "a1=2,d=3,a5=?", a: "14", difficulty: 2 },
+              { id: "10-seq-m2", q: "a1=1,d=4,a4=?", a: "13", difficulty: 2 },
+              { id: "10-seq-m3", q: "a1=3,d=5,a3=?", a: "13", difficulty: 2 },
+              { id: "10-seq-m4", q: "a1=5,d=2,a6=?", a: "15", difficulty: 2 },
+              { id: "10-seq-m5", q: "a1=10,d=10,a3=?", a: "30", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "10-seq-h1", q: "a1=2,d=3,a10=?", a: "29", difficulty: 3 },
+              { id: "10-seq-h2", q: "a1=5,d=4,a8=?", a: "33", difficulty: 3 },
+              { id: "10-seq-h3", q: "a1=1,d=6,a7=?", a: "37", difficulty: 3 },
+              { id: "10-seq-h4", q: "a1=3,d=2,a12=?", a: "25", difficulty: 3 },
+              { id: "10-seq-h5", q: "a1=7,d=5,a9=?", a: "47", difficulty: 3 },
+            ],
+          },
+
+          inequalities10: {
+            title: "Күрделі теңсіздіктер",
+
+            easy: [
+              { id: "10-in-e1", q: "x+5>10", a: "5", difficulty: 1 },
+              { id: "10-in-e2", q: "2x>8", a: "4", difficulty: 1 },
+              { id: "10-in-e3", q: "x-3<5", a: "8", difficulty: 1 },
+              { id: "10-in-e4", q: "3x>9", a: "3", difficulty: 1 },
+              { id: "10-in-e5", q: "x/2>4", a: "8", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "10-in-m1", q: "2x+3>7", a: "2", difficulty: 2 },
+              { id: "10-in-m2", q: "3x-4>5", a: "3", difficulty: 2 },
+              { id: "10-in-m3", q: "4x+2<10", a: "2", difficulty: 2 },
+              { id: "10-in-m4", q: "5x-5>0", a: "1", difficulty: 2 },
+              { id: "10-in-m5", q: "6x+6>18", a: "2", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "10-in-h1", q: "2x-5>3", a: "4", difficulty: 3 },
+              { id: "10-in-h2", q: "3x+2<14", a: "4", difficulty: 3 },
+              { id: "10-in-h3", q: "5x-10>0", a: "2", difficulty: 3 },
+              { id: "10-in-h4", q: "4x+8<20", a: "3", difficulty: 3 },
+              { id: "10-in-h5", q: "7x-14>0", a: "2", difficulty: 3 },
+            ],
+          },
+
+          probability10: {
+            title: "Ықтималдық (Кеңейтілген)",
+
+            easy: [
+              { id: "10-pr-e1", q: "P(герб) тиын", a: "1/2", difficulty: 1 },
+              { id: "10-pr-e2", q: "P(1) кубик", a: "1/6", difficulty: 1 },
+              { id: "10-pr-e3", q: "P(жұп) кубик", a: "1/2", difficulty: 1 },
+              {
+                id: "10-pr-e4",
+                q: "10 билет 1 ұтыс",
+                a: "1/10",
+                difficulty: 1,
+              },
+              {
+                id: "10-pr-e5",
+                q: "5 қыз 5 ұл P(қыз)",
+                a: "1/2",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              {
+                id: "10-pr-m1",
+                q: "2 тиын P(2 герб)",
+                a: "1/4",
+                difficulty: 2,
+              },
+              {
+                id: "10-pr-m2",
+                q: "2 кубик P(қосынды 7)",
+                a: "1/6",
+                difficulty: 2,
+              },
+              { id: "10-pr-m3", q: "P(1 немесе 2)", a: "1/3", difficulty: 2 },
+              { id: "10-pr-m4", q: "8 билет 2 ұтыс", a: "1/4", difficulty: 2 },
+              {
+                id: "10-pr-m5",
+                q: "3 тиын P(3 герб)",
+                a: "1/8",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "10-pr-h1",
+                q: "P(кемінде 1 герб)",
+                a: "3/4",
+                difficulty: 3,
+              },
+              { id: "10-pr-h2", q: "P(қосынды>8)", a: "5/36", difficulty: 3 },
+              { id: "10-pr-h3", q: "P(2 қыз 1 ұл)", a: "1/4", difficulty: 3 },
+              { id: "10-pr-h4", q: "P(3 тақ)", a: "1/8", difficulty: 3 },
+              { id: "10-pr-h5", q: "P(екі 6)", a: "1/36", difficulty: 3 },
+            ],
+          },
+        },
+
+        11: {
+          applications_derivative: {
+            title: "Туындының қолданылуы (Экстремум)",
+
+            easy: [
+              {
+                id: "11-ad-e1",
+                q: "f(x)=x^2, f'(x)=?",
+                a: "2x",
+                difficulty: 1,
+              },
+              {
+                id: "11-ad-e2",
+                q: "f(x)=3x^2, f'(x)=?",
+                a: "6x",
+                difficulty: 1,
+              },
+              {
+                id: "11-ad-e3",
+                q: "f(x)=x^3, f'(x)=?",
+                a: "3x^2",
+                difficulty: 1,
+              },
+              { id: "11-ad-e4", q: "f(x)=5x, f'(x)=?", a: "5", difficulty: 1 },
+              { id: "11-ad-e5", q: "f(x)=7, f'(x)=?", a: "0", difficulty: 1 },
+            ],
+
+            medium: [
+              {
+                id: "11-ad-m1",
+                q: "f(x)=x^2-4x, экстремум x=?",
+                a: "2",
+                difficulty: 2,
+              },
+              {
+                id: "11-ad-m2",
+                q: "f(x)=x^2-6x, экстремум x=?",
+                a: "3",
+                difficulty: 2,
+              },
+              {
+                id: "11-ad-m3",
+                q: "f(x)=x^2+2x, экстремум x=?",
+                a: "-1",
+                difficulty: 2,
+              },
+              {
+                id: "11-ad-m4",
+                q: "f(x)=x^3-3x, f'(x)=0 шешімі?",
+                a: "1,-1",
+                difficulty: 2,
+              },
+              {
+                id: "11-ad-m5",
+                q: "f(x)=2x^2-8x, экстремум x=?",
+                a: "2",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "11-ad-h1",
+                q: "f(x)=x^3-6x^2+9x, критикалық нүктелер?",
+                a: "1,3",
+                difficulty: 3,
+              },
+              {
+                id: "11-ad-h2",
+                q: "f(x)=x^4-4x^2, f'(x)=0 шешімі?",
+                a: "0,1,-1",
+                difficulty: 3,
+              },
+              {
+                id: "11-ad-h3",
+                q: "f(x)=x^3-3x^2+2, экстремум x=?",
+                a: "0,2",
+                difficulty: 3,
+              },
+              {
+                id: "11-ad-h4",
+                q: "f(x)=x^2-2x+1 минимум x=?",
+                a: "1",
+                difficulty: 3,
+              },
+              {
+                id: "11-ad-h5",
+                q: "f(x)=3x^2-12x+7 экстремум x=?",
+                a: "2",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          logarithmic_equations: {
+            title: "Логарифмдік теңдеулер",
+
+            easy: [
+              { id: "11-log-e1", q: "\\log_2 8", a: "3", difficulty: 1 },
+              { id: "11-log-e2", q: "\\log_10 100", a: "2", difficulty: 1 },
+              { id: "11-log-e3", q: "\\log_3 9", a: "2", difficulty: 1 },
+              { id: "11-log-e4", q: "\\log_5 25", a: "2", difficulty: 1 },
+              { id: "11-log-e5", q: "\\log_4 16", a: "2", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "11-log-m1", q: "\\log_2 x = 3", a: "8", difficulty: 2 },
+              { id: "11-log-m2", q: "\\log_3 x = 2", a: "9", difficulty: 2 },
+              { id: "11-log-m3", q: "\\log_5 x = 1", a: "5", difficulty: 2 },
+              { id: "11-log-m4", q: "\\log_2(x-1)=2", a: "5", difficulty: 2 },
+              { id: "11-log-m5", q: "\\log_4 x=3", a: "64", difficulty: 2 },
+            ],
+
+            hard: [
+              {
+                id: "11-log-h1",
+                q: "\\log_2(x^2)=4",
+                a: "4,-4",
+                difficulty: 3,
+              },
+              { id: "11-log-h2", q: "\\log_3(x+1)=2", a: "8", difficulty: 3 },
+              { id: "11-log-h3", q: "\\log_5(2x)=1", a: "2.5", difficulty: 3 },
+              { id: "11-log-h4", q: "\\log_2(x-3)=3", a: "11", difficulty: 3 },
+              {
+                id: "11-log-h5",
+                q: "\\log_3(x^2-1)=2",
+                a: "4,-4",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          exponential_equations: {
+            title: "Көрсеткіштік теңдеулер",
+
+            easy: [
+              { id: "11-exp-e1", q: "2^x=8", a: "3", difficulty: 1 },
+              { id: "11-exp-e2", q: "3^x=9", a: "2", difficulty: 1 },
+              { id: "11-exp-e3", q: "5^x=25", a: "2", difficulty: 1 },
+              { id: "11-exp-e4", q: "4^x=16", a: "2", difficulty: 1 },
+              { id: "11-exp-e5", q: "10^x=100", a: "2", difficulty: 1 },
+            ],
+
+            medium: [
+              { id: "11-exp-m1", q: "2^(x+1)=16", a: "3", difficulty: 2 },
+              { id: "11-exp-m2", q: "3^(2x)=9", a: "1", difficulty: 2 },
+              { id: "11-exp-m3", q: "5^(x-1)=5", a: "2", difficulty: 2 },
+              { id: "11-exp-m4", q: "4^(x+2)=64", a: "1", difficulty: 2 },
+              { id: "11-exp-m5", q: "9^x=3", a: "1/2", difficulty: 2 },
+            ],
+
+            hard: [
+              { id: "11-exp-h1", q: "2^x=3", a: "log2(3)", difficulty: 3 },
+              { id: "11-exp-h2", q: "5^x=7", a: "log5(7)", difficulty: 3 },
+              {
+                id: "11-exp-h3",
+                q: "3^(x+1)=5",
+                a: "log3(5)-1",
+                difficulty: 3,
+              },
+              { id: "11-exp-h4", q: "7^(2x)=3", a: "log7(3)/2", difficulty: 3 },
+              { id: "11-exp-h5", q: "4^x=5", a: "log4(5)", difficulty: 3 },
+            ],
+          },
+
+          integral_applications: {
+            title: "Интегралды қолдану",
+
+            easy: [
+              { id: "11-int-e1", q: "\\int_0^1 x dx", a: "1/2", difficulty: 1 },
+              { id: "11-int-e2", q: "\\int_0^2 2x dx", a: "4", difficulty: 1 },
+              { id: "11-int-e3", q: "\\int_0^1 3 dx", a: "3", difficulty: 1 },
+              { id: "11-int-e4", q: "\\int_1^2 x dx", a: "3/2", difficulty: 1 },
+              {
+                id: "11-int-e5",
+                q: "\\int_0^1 x^2 dx",
+                a: "1/3",
+                difficulty: 1,
+              },
+            ],
+
+            medium: [
+              {
+                id: "11-int-m1",
+                q: "\\int_0^1 (x+1) dx",
+                a: "3/2",
+                difficulty: 2,
+              },
+              {
+                id: "11-int-m2",
+                q: "\\int_0^2 x^2 dx",
+                a: "8/3",
+                difficulty: 2,
+              },
+              { id: "11-int-m3", q: "\\int_1^3 x dx", a: "4", difficulty: 2 },
+              {
+                id: "11-int-m4",
+                q: "\\int_0^1 (2x+1) dx",
+                a: "2",
+                difficulty: 2,
+              },
+              {
+                id: "11-int-m5",
+                q: "\\int_0^1 4x^3 dx",
+                a: "1",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "11-int-h1",
+                q: "\\int_0^1 (x^3+x) dx",
+                a: "3/4",
+                difficulty: 3,
+              },
+              {
+                id: "11-int-h2",
+                q: "\\int_0^\\pi \\sin x dx",
+                a: "2",
+                difficulty: 3,
+              },
+              {
+                id: "11-int-h3",
+                q: "\\int_0^1 e^x dx",
+                a: "e-1",
+                difficulty: 3,
+              },
+              {
+                id: "11-int-h4",
+                q: "\\int_0^1 1/(1+x) dx",
+                a: "ln2",
+                difficulty: 3,
+              },
+              {
+                id: "11-int-h5",
+                q: "\\int_0^1 (3x^2+2x) dx",
+                a: "2",
+                difficulty: 3,
+              },
+            ],
+          },
+
+          parameter_equations: {
+            title: "Параметрлі теңдеулер",
+
+            easy: [
+              {
+                id: "11-par-e1",
+                q: "x^2 - a = 0, a=4",
+                a: "2,-2",
+                difficulty: 1,
+              },
+              { id: "11-par-e2", q: "x^2 - a^2 = 0", a: "a,-a", difficulty: 1 },
+              { id: "11-par-e3", q: "ax=2, a=2", a: "1", difficulty: 1 },
+              { id: "11-par-e4", q: "x+a=0", a: "-a", difficulty: 1 },
+              { id: "11-par-e5", q: "2x+a=0", a: "-a/2", difficulty: 1 },
+            ],
+
+            medium: [
+              {
+                id: "11-par-m1",
+                q: "x^2+ax+1=0 дискриминант?",
+                a: "a^2-4",
+                difficulty: 2,
+              },
+              {
+                id: "11-par-m2",
+                q: "x^2+2ax+a^2=0 түбір?",
+                a: "-a",
+                difficulty: 2,
+              },
+              {
+                id: "11-par-m3",
+                q: "ax^2-1=0",
+                a: "1/√a,-1/√a",
+                difficulty: 2,
+              },
+              { id: "11-par-m4", q: "x^2-a^2=0", a: "a,-a", difficulty: 2 },
+              {
+                id: "11-par-m5",
+                q: "x^2+2ax+4=0 D=?",
+                a: "4a^2-16",
+                difficulty: 2,
+              },
+            ],
+
+            hard: [
+              {
+                id: "11-par-h1",
+                q: "x^2+ax+1=0 бір түбір үшін a=?",
+                a: "2,-2",
+                difficulty: 3,
+              },
+              {
+                id: "11-par-h2",
+                q: "x^2+ax+a=0 екі түбір үшін шарт?",
+                a: "a^2-4a>0",
+                difficulty: 3,
+              },
+              {
+                id: "11-par-h3",
+                q: "x^2+ax+4=0 нақты түбір жоқ шарты?",
+                a: "a^2-16<0",
+                difficulty: 3,
+              },
+              {
+                id: "11-par-h4",
+                q: "x^2+ax+1=0 түбірлері қарама-қарсы",
+                a: "a=0",
+                difficulty: 3,
+              },
+              {
+                id: "11-par-h5",
+                q: "x^2+ax+1=0 түбірлері тең",
+                a: "a=2,-2",
+                difficulty: 3,
+              },
+            ],
+          },
+        },
+      };
+
+      const THEORY_BANK = {
+        7: [
+          {
+            id: "7-linear",
+            title: "Сызықтық теңдеулер",
+            summary: "ax + b = 0 түріндегі теңдеулерді шешу алгоритмі",
+
+            sections: [
+              {
+                type: "definition",
+                title: "Анықтама",
+                content: [
+                  "Сызықтық теңдеу — айнымалысы бірінші дәрежеде болатын теңдеу.",
+                  "Жалпы түрі:",
+                  "ax + b = 0",
+                  "Мұндағы:",
+                  "a — айнымалының коэффициенті,",
+                  "b — бос мүше,",
+                  "a ≠ 0.",
+                ],
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Негізгі формула",
+                formula: "ax + b = 0 \\Rightarrow x = -\\frac{b}{a}",
+              },
+
+              {
+                type: "example_steps",
+                title: "Мысал (қадамдап түсіндіру)",
+                task: "3x - 6 = 0",
+                steps: [
+                  "Бос мүшені қарсы жаққа өткіземіз: $3x = 6$",
+                  "Коэффициентке бөлеміз: $x = \\frac{6}{3}$",
+                  "Қысқартамыз: $x = 2$",
+                  "Тексеру: $3\\cdot 2 - 6 = 0$ ",
+                ],
+                answer: "$x = 2$",
+              },
+            ],
+
+            examples: [
+              {
+                question: "3x - 6 = 0",
+                steps: ["3x = 6", "x = \\frac{6}{3}", "x = 2"],
+                answer: "x = 2",
+              },
+
+              {
+                question: "5x + 10 = 0",
+                steps: ["5x = -10", "x = \\frac{-10}{5}", "x = -2"],
+                answer: "x = -2",
+              },
+
+              {
+                question: "2(x - 3) = 0",
+                steps: ["2x - 6 = 0", "2x = 6", "x = 3"],
+                answer: "x = 3",
+              },
+            ],
+          },
+
+          {
+            id: "7-fractions",
+            title: "Бөлшектер",
+            summary: "Бөлшектерді қосу, азайту, көбейту, бөлу",
+
+            sections: [
+              {
+                type: "definition",
+                title: "Анықтама",
+                content: [
+                  "Бөлшек — алымы мен бөлімі бар сан.",
+                  "Жалпы түрі: $\\frac{a}{b}$, $b \\ne 0$",
+                ],
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Қосу",
+                formula: "\\frac{a}{b} + \\frac{c}{b} = \\frac{a+c}{b}",
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Көбейту",
+                formula: "\\frac{a}{b} \\times \\frac{c}{d} = \\frac{ac}{bd}",
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Бөлу",
+                formula:
+                  "\\frac{a}{b} : \\frac{c}{d} = \\frac{a}{b} \\times \\frac{d}{c}",
+              },
+
+              {
+                type: "example_steps",
+                title: "Мысал (қадамдап түсіндіру)",
+                task: "\\frac{1}{2} + \\frac{1}{3}",
+                steps: [
+                  "Ортақ бөлім табамыз: $6$",
+                  "$\\frac{1}{2} = \\frac{3}{6}$",
+                  "$\\frac{1}{3} = \\frac{2}{6}$",
+                  "$\\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6}$",
+                ],
+                answer: "$\\frac{5}{6}$",
+              },
+            ],
+
+            examples: [
+              {
+                question: "\\frac{1}{2} + \\frac{1}{3}",
+                steps: [
+                  "Ортақ бөлім: 6",
+                  "\\frac{1}{2} = \\frac{3}{6}",
+                  "\\frac{1}{3} = \\frac{2}{6}",
+                  "\\frac{3}{6} + \\frac{2}{6} = \\frac{5}{6}",
+                ],
+                answer: "\\frac{5}{6}",
+              },
+            ],
+          },
+
+          {
+            id: "7-percent",
+            title: "Пайыз",
+            summary: "Процентті табу және қолдану",
+
+            sections: [
+              {
+                type: "definition",
+                title: "Анықтама",
+                content: [
+                  String.raw`1% = $\frac{1}{100}$`,
+                  "Процент — жүзден бір бөлік.",
+                ],
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Негізгі формула",
+                formula: "a \\times \\frac{p}{100}",
+              },
+
+              {
+                type: "remember",
+                title: "Есте сақта!",
+                content: [
+                  "Процент әрқашан 100-ге бөлінеді.",
+                  "Алдымен процентті бөлшекке айналдыр.",
+                ],
+              },
+              {
+                type: "example_steps",
+                title: "Мысал (қадамдап түсіндіру)",
+                task: "150 санының 20%-ын тап",
+                steps: [
+                  String.raw`20% = $\frac{20}{100}$`,
+                  String.raw`Формула: $150 \times \frac{20}{100}$`,
+                  String.raw`Есептейміз: $150 \times 0.2 = 30$`,
+                  String.raw`Тексеру: $30$ — $150$-нің $20\%$-ы`,
+                ],
+                answer: "30",
+              },
+            ],
+          },
+
+          {
+            id: "7-rational",
+            title: "Рационал сандар",
+            summary: "Оң және теріс сандармен амалдар",
+
+            sections: [
+              {
+                type: "definition",
+                title: "Анықтама",
+                content: [
+                  String.raw`Рационал сан — $\frac{a}{b}$ түрінде жазылатын сан, мұнда $a,b \in \mathbb{Z}$ және $b \ne 0$.`,
+                  String.raw`Рационал сандарға бүтін сандар да жатады, себебі $-3 = \frac{-3}{1}$, $0=\frac{0}{1}$.`,
+                  String.raw`Кез келген аяқталатын ондық бөлшек рационал: $0.75=\frac{75}{100}=\frac{3}{4}$.`,
+                  String.raw`Қайталанатын ондық бөлшек те рационал: $0.\overline{3}=\frac{1}{3}$.`,
+                ],
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Негізгі формула",
+                formula: String.raw`(-a)(-b)=ab`,
+              },
+
+              // ✅ "Есте сақта!" орнына — мысал
+              {
+                type: "example_steps",
+                title: "Мысал (қадамдап түсіндіру)",
+                task: "0.75 санын бөлшек түрінде жаз",
+
+                steps: [
+                  String.raw`$0.75 = \frac{75}{100}$`,
+                  String.raw`Қысқартамыз: $\frac{75}{100} = \frac{3}{4}$ (25-ке бөлеміз)`,
+                  String.raw`Демек, $0.75$ — рационал сан ✅`,
+                ],
+                answer: String.raw`$\frac{3}{4}$`,
+              },
+            ],
+
+            examples: [
+              {
+                question: String.raw`-1.2 санын бөлшек түрінде жаз`,
+                steps: [
+                  String.raw`-1.2 = -\frac{12}{10}`,
+                  String.raw`Қысқартамыз: $-\frac{12}{10} = -\frac{6}{5}$`,
+                ],
+                answer: String.raw`-\frac{6}{5}`,
+              },
+            ],
+          },
+
+          {
+            id: "7-expressions",
+            title: "Өрнектер",
+            summary: "Ұқсас мүшелер және жақша ашу",
+
+            sections: [
+              {
+                type: "definition",
+                title: "Анықтама",
+                content: [
+                  "Өрнек — сандар, айнымалылар және амал белгілерінен (+, −, ×, ÷) құралған математикалық жазу.",
+                  "Өрнекті ықшамдау — ұқсас мүшелерді біріктіру және жақшаны ашу арқылы қысқарту.",
+                ],
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Ұқсас мүшелер",
+                formula: "3x + 2x = 5x",
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Жақша ашу",
+                formula: "a(b + c) = ab + ac",
+              },
+
+              {
+                type: "remember",
+                title: "Есте сақта!",
+                content: [
+                  "Тек ұқсас мүшелер қосылады.",
+                  "Жақша алдындағы сан барлық мүшеге көбейеді.",
+                ],
+              },
+              {
+                type: "example_steps",
+                title: "Мысал (қадамдап түсіндіру)",
+                task: "3x + 2x − x өрнегін ықшамда",
+                steps: [
+                  String.raw`Берілгені: $3x + 2x - x$`,
+                  String.raw`Ұқсас мүшелерді біріктіреміз: $(3 + 2 - 1)x$`,
+                  String.raw`Есептейміз: $4x$`,
+                  String.raw`Тексеру: $x=1$ болса, $3+2-1=4$ ✅`,
+                ],
+                answer: String.raw`$4x$`,
+              },
+            ],
+
+            examples: [
+              {
+                question: "2(x + 3)",
+                steps: ["2 \\times x", "2 \\times 3", "2x + 6"],
+                answer: "2x + 6",
+              },
+            ],
+          },
+
+          {
+            id: "7-powers",
+            title: "Дәреже",
+            summary: "aⁿ және оның қасиеттері",
+
+            sections: [
+              {
+                type: "definition",
+                title: "Анықтама",
+                content: [
+                  String.raw`Дәреже — $a^n$ түріндегі өрнек.`,
+                  String.raw`Мұнда $a$ — негіз (base), $n$ — дәреже көрсеткіші (натурал сан).`,
+                  String.raw`Мағынасы: $a^n$ — $a$ санын өзіне $n$ рет көбейту, яғни $a^n=\underbrace{a\cdot a\cdot \ldots \cdot a}_{n\ \text{рет}}$.`,
+                ],
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Қасиеттер",
+                formula: "a^m \\times a^n = a^{m+n}",
+              },
+
+              {
+                type: "interactive_formula",
+                title: "Қасиет 2",
+                formula: "\\frac{a^m}{a^n} = a^{m-n}",
+              },
+
+              {
+                type: "remember",
+                title: "Есте сақта!",
+                content: ["a^0 = 1", "(a^m)^n = a^{mn}"],
+              },
+
+              {
+                type: "example_steps",
+                title: "Мысал (қадамдап түсіндіру)",
+                task: "2^3 · 2^4 мәнін тап",
+                steps: [
+                  String.raw`Қасиет: $a^m \cdot a^n = a^{m+n}$`,
+                  String.raw`Қолданамыз: $2^3 \cdot 2^4 = 2^{3+4} = 2^7$`,
+                  String.raw`Есептейміз: $2^7 = 128$`,
+                  String.raw`Тексеру: $2^3=8$, $2^4=16$, $8\cdot 16=128$ ✅`,
+                ],
+                answer: String.raw`128`,
+              },
+            ],
+          },
+        ],
+
+        8: [
+          {
+  id: "8-square-root",
+  title: "Квадрат түбір",
+  summary: "√a және оның қасиеттері",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Квадрат түбір — $x^2 = a$ теңдігін қанағаттандыратын сан.`,
+        String.raw`Белгіленуі: $\sqrt{a}$`,
+        String.raw`$\sqrt{a} \ge 0$ (негізгі түбір оң сан).`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`\sqrt{a^2} = |a|`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`\sqrt{ab} = \sqrt{a}\sqrt{b}`,
+        String.raw`\sqrt{\frac{a}{b}} = \frac{\sqrt{a}}{\sqrt{b}}`,
+        String.raw`\sqrt{25} = 5, \quad -5 емес!`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "√49 + √16 мәнін тап",
+      steps: [
+        String.raw`\sqrt{49} = 7`,
+        String.raw`\sqrt{16} = 4`,
+        String.raw`Қосамыз: $7 + 4 = 11$`,
+      ],
+      answer: String.raw`11`,
+    },
+  ],
+},
+          {
+  id: "8-quadratic",
+  title: "Квадрат теңдеулер",
+  summary: "ax² + bx + c = 0",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Квадрат теңдеу — $ax^2 + bx + c = 0$ түріндегі теңдеу.`,
+        String.raw`Мұнда $a \ne 0$.`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`D = b^2 - 4ac`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`D > 0 → 2 түбір`,
+        String.raw`D = 0 → 1 түбір`,
+        String.raw`D < 0 → түбір жоқ`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "x² − 5x + 6 = 0 теңдеуін шеш",
+      steps: [
+        String.raw`a=1, b=-5, c=6`,
+        String.raw`D = (-5)^2 - 4·1·6 = 25 - 24 = 1`,
+        String.raw`x = \frac{5 \pm \sqrt{1}}{2}`,
+        String.raw`x₁ = 3, x₂ = 2`,
+      ],
+      answer: String.raw`x = 2; 3`,
+    },
+  ],
+},
+{
+  id: "8-linear-function",
+  title: "Сызықтық функция",
+  summary: "y = kx + b",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Сызықтық функция: $y = kx + b$`,
+        String.raw`k — еңкіштік коэффициенті.`,
+        String.raw`b — ордината осімен қиылысу нүктесі.`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`y = kx + b`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "y = 2x + 1 функциясында x=3 болғанда y мәнін тап",
+      steps: [
+        String.raw`x=3 қоямыз`,
+        String.raw`y = 2·3 + 1`,
+        String.raw`y = 7`,
+      ],
+      answer: String.raw`7`,
+    },
+  ],
+},
+{
+  id: "8-quadratic-expression",
+  title: "Квадрат үшмүше",
+  summary: "ax² + bx + c",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Квадрат үшмүше — $ax^2 + bx + c$`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`D = b^2 - 4ac`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "x² − 4x + 4 өрнегін көбейткіштерге жікте",
+      steps: [
+        String.raw`D = (-4)^2 - 4·1·4 = 16 - 16 = 0`,
+        String.raw`(x - 2)^2`,
+      ],
+      answer: String.raw`(x - 2)^2`,
+    },
+  ],
+},
+{
+  id: "8-statistics",
+  title: "Статистика",
+  summary: "Орташа мән, мода, медиана",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Орташа мән — барлық мәндердің қосындысын санына бөлу.",
+        "Мода — ең жиі кездесетін сан.",
+        "Медиана — ортасындағы сан.",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "2, 3, 3, 5, 7 сандарының орташа мәнін тап",
+      steps: [
+        "Қосынды: 2+3+3+5+7 = 20",
+        "Саны: 5",
+        "Орташа мән: 20/5 = 4",
+      ],
+      answer: "4",
+    },
+  ],
+},
+{
+  id: "8-probability",
+  title: "Ықтималдық",
+  summary: "Ықтималдық формуласы",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Ықтималдық формуласы: P(A) = \frac{m}{n}`,
+        "m — қолайлы жағдай саны.",
+        "n — барлық мүмкін жағдай саны.",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "Кубик тастағанда 3 санының түсу ықтималдығын тап",
+      steps: [
+        "Қолайлы жағдай: 1",
+        "Барлық жағдай: 6",
+        String.raw`P = \frac{1}{6}`,
+      ],
+      answer: String.raw`\frac{1}{6}`,
+    },
+  ],
+},
+        ],
+
+        9: [
+          {
+  id: "9-quadratic-equations",
+  title: "Квадрат теңдеулер",
+  summary: "ax² + bx + c = 0",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Квадрат теңдеу — $ax^2 + bx + c = 0$ түріндегі теңдеу.`,
+        String.raw`Мұнда $a \ne 0$.`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`D = b^2 - 4ac`,
+        String.raw`D > 0 → 2 түбір`,
+        String.raw`D = 0 → 1 түбір`,
+        String.raw`D < 0 → түбір жоқ`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "x² − 3x − 4 = 0 теңдеуін шеш",
+      steps: [
+        String.raw`a=1, b=-3, c=-4`,
+        String.raw`D = (-3)^2 - 4·1·(-4) = 9 + 16 = 25`,
+        String.raw`x = \frac{3 \pm 5}{2}`,
+        String.raw`x₁ = 4, x₂ = -1`,
+      ],
+      answer: String.raw`x = 4; -1`,
+    },
+  ],
+},
+
+{
+  id: "9-quadratic-function",
+  title: "Квадрат функция",
+  summary: "y = ax² + bx + c",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Квадрат функция: $y = ax^2 + bx + c$`,
+        String.raw`Графигі — парабола.`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`x_0 = \frac{-b}{2a}`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`a > 0 → парабола жоғары`,
+        String.raw`a < 0 → парабола төмен`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "y = x² − 4x + 3 функциясының төбесін тап",
+      steps: [
+        String.raw`a=1, b=-4`,
+        String.raw`x_0 = \frac{-(-4)}{2·1} = 2`,
+        String.raw`y(2) = 4 - 8 + 3 = -1`,
+        String.raw`Төбе: (2, -1)`,
+      ],
+      answer: String.raw`(2, -1)`,
+    },
+  ],
+},
+
+{
+  id: "9-arithmetic-progression",
+  title: "Арифметикалық прогрессия",
+  summary: "aₙ формуласы",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Арифметикалық прогрессия — айырмасы тұрақты тізбек.",
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`a_n = a_1 + (n-1)d`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "a₁=3, d=2 болса, a₅ тап",
+      steps: [
+        String.raw`a_5 = 3 + (5-1)·2`,
+        String.raw`a_5 = 3 + 8`,
+        String.raw`a_5 = 11`,
+      ],
+      answer: "11",
+    },
+  ],
+},
+
+
+{
+  id: "9-geometric-progression",
+  title: "Геометриялық прогрессия",
+  summary: "aₙ формуласы",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Геометриялық прогрессия — еселігі тұрақты тізбек.",
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`a_n = a_1 q^{n-1}`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "a₁=2, q=3 болса, a₄ тап",
+      steps: [
+        String.raw`a_4 = 2·3^{3}`,
+        String.raw`a_4 = 2·27`,
+        String.raw`a_4 = 54`,
+      ],
+      answer: "54",
+    },
+  ],
+},
+
+{
+  id: "9-inequalities",
+  title: "Теңсіздіктер",
+  summary: "ax + b > 0",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Теңсіздік — екі өрнектің салыстырылуы.",
+      ],
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        "Теріс санға көбейтсең — белгі өзгереді!",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "-2x > 6 теңсіздігін шеш",
+      steps: [
+        String.raw`x < -3`,
+      ],
+      answer: String.raw`x < -3`,
+    },
+  ],
+},
+
+{
+  id: "9-systems",
+  title: "Жүйелер",
+  summary: "Екі айнымалысы бар теңдеулер",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Жүйе — бірнеше теңдеулердің жиынтығы.",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "x + y = 5, x - y = 1 жүйесін шеш",
+      steps: [
+        String.raw`Қосамыз: 2x = 6`,
+        String.raw`x = 3`,
+        String.raw`y = 2`,
+      ],
+      answer: String.raw`(3, 2)`,
+    },
+  ],
+},
+        ],
+
+        10: [
+          {
+  id: "10-derivative",
+  title: "Туынды",
+  summary: "f'(x) анықтамасы",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Туынды — функцияның өзгеру жылдамдығы.`,
+        String.raw`Анықтамасы: $f'(x)=\lim_{h\to0}\frac{f(x+h)-f(x)}{h}$`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`(x^n)' = nx^{n-1}`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`(c)' = 0`,
+        String.raw`(x)' = 1`,
+        String.raw`(cf(x))' = c f'(x)`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "y = x³ функциясының туындысын тап",
+      steps: [
+        String.raw`(x^3)' = 3x^2`,
+      ],
+      answer: String.raw`3x^2`,
+    },
+  ],
+  },
+
+  {
+  id: "10-logarithms",
+  title: "Логарифмдер",
+  summary: "logₐ b",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`log_a b = c ⇔ a^c = b`,
+        String.raw`a>0, a≠1, b>0`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`log_a(xy)=log_a x + log_a y`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`log_a \frac{x}{y} = log_a x - log_a y`,
+        String.raw`log_a x^n = n log_a x`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "log₂ 8 мәнін тап",
+      steps: [
+        String.raw`2^3 = 8`,
+        String.raw`Сондықтан log₂ 8 = 3`,
+      ],
+      answer: "3",
+    },
+  ],
+},
+
+{
+  id: "10-trigonometry",
+  title: "Тригонометрия",
+  summary: "sin, cos, tan",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`sin α = \frac{қарсы}{гипотенуза}`,
+        String.raw`cos α = \frac{жанама}{гипотенуза}`,
+        String.raw`tan α = \frac{қарсы}{жанама}`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`sin^2 α + cos^2 α = 1`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "sin 30° мәнін тап",
+      steps: [
+        String.raw`sin 30° = \frac{1}{2}`,
+      ],
+      answer: String.raw`\frac{1}{2}`,
+    },
+  ],
+},
+
+{
+  id: "10-sequences",
+  title: "Тізбектер",
+  summary: "aₙ формуласы",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Тізбек — белгілі заңдылықпен берілген сандар жиыны.",
+        String.raw`a_n — тізбектің n-ші мүшесі.`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`a_n = f(n)`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        String.raw`Егер a_n = a_{n-1} + d → арифметикалық заңдылық`,
+        String.raw`Егер a_n = a_{n-1}·q → геометриялық заңдылық`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "a_n = 3n - 1 болса, a₅ тап",
+      steps: [
+        String.raw`a_5 = 3·5 - 1`,
+        String.raw`a_5 = 14`,
+      ],
+      answer: "14",
+    },
+  ],
+},
+
+{
+  id: "10-complex-inequalities",
+  title: "Күрделі теңсіздіктер",
+  summary: "Интервал әдісі",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Күрделі теңсіздік — көпмүшелі немесе бөлшекті теңсіздік.",
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`(x-a)(x-b) > 0`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        "Интервал әдісі қолданылады.",
+        "Бөлгіш нөлге тең болмайды!",
+        "Теріс санға көбейтсең — белгі өзгереді!",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "x² − 9 > 0 теңсіздігін шеш",
+      steps: [
+        String.raw`(x-3)(x+3) > 0`,
+        String.raw`x < -3 немесе x > 3`,
+      ],
+      answer: String.raw`(-∞, -3) ∪ (3, ∞)`,
+    },
+  ],
+},
+
+{
+  id: "10-advanced-probability",
+  title: "Ықтималдық (Кеңейтілген)",
+  summary: "Комбинаторика негіздері",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`P(A) = \frac{қолайлы}{барлығы}`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`C_n^k = \frac{n!}{k!(n-k)!}`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "5 адамның ішінен 2 адамды таңдау тәсілдерін тап",
+      steps: [
+        String.raw`C_5^2 = \frac{5!}{2!3!}`,
+        String.raw`= 10`,
+      ],
+      answer: "10",
+    },
+  ],
+},
+
+        ],
+
+        11: [
+          {
+  id: "11-derivative-extremum",
+  title: "Туындының қолданылуы (Экстремум)",
+  summary: "f'(x)=0 шарттары",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Экстремум — функцияның максимум немесе минимум нүктесі.",
+        String.raw`Критикалық нүкте: f'(x)=0`,
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`f'(x)=0`,
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        "Туынды + → функция өседі",
+        "Туынды - → функция кемиді",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "y = x² − 4x функциясының экстремумын тап",
+      steps: [
+        String.raw`y' = 2x - 4`,
+        String.raw`2x - 4 = 0`,
+        String.raw`x = 2`,
+        String.raw`y(2) = -4`,
+      ],
+      answer: String.raw`Минимум нүкте: (2, -4)`,
+    },
+  ],
+},
+
+{
+  id: "11-logarithmic-equations",
+  title: "Логарифмдік теңдеулер",
+  summary: "log_a f(x) = b",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`log_a f(x) = b ⇔ f(x)=a^b`,
+        String.raw`a>0, a≠1, f(x)>0`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "log₂ x = 3 теңдеуін шеш",
+      steps: [
+        String.raw`x = 2^3`,
+        String.raw`x = 8`,
+      ],
+      answer: "8",
+    },
+  ],
+},
+
+{
+  id: "11-exponential-equations",
+  title: "Көрсеткіштік теңдеулер",
+  summary: "a^{f(x)} = a^{g(x)}",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        String.raw`Егер a>0, a≠1 болса,`,
+        String.raw`a^{f(x)} = a^{g(x)} ⇔ f(x)=g(x)`,
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "2^{x+1} = 8 теңдеуін шеш",
+      steps: [
+        String.raw`8 = 2^3`,
+        String.raw`x+1=3`,
+        String.raw`x=2`,
+      ],
+      answer: "2",
+    },
+  ],
+},
+
+{
+  id: "11-integral",
+  title: "Интегралды қолдану",
+  summary: "∫ f(x) dx",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Интеграл — туындының кері амалы.",
+      ],
+    },
+
+    {
+      type: "interactive_formula",
+      title: "Негізгі формула",
+      formula: String.raw`\int x^n dx = \frac{x^{n+1}}{n+1} + C`,
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "∫ 3x² dx тап",
+      steps: [
+        String.raw`3 \int x^2 dx`,
+        String.raw`= 3 \cdot \frac{x^3}{3}`,
+        String.raw`= x^3 + C`,
+      ],
+      answer: String.raw`x^3 + C`,
+    },
+  ],
+},
+
+{
+  id: "11-parameter-equations",
+  title: "Параметрлі теңдеулер",
+  summary: "a параметрі бар теңдеу",
+
+  sections: [
+    {
+      type: "definition",
+      title: "Анықтама",
+      content: [
+        "Параметрлі теңдеу — құрамында параметрі бар теңдеу.",
+      ],
+    },
+
+    {
+      type: "remember",
+      title: "Есте сақта!",
+      content: [
+        "Дискриминант параметрге тәуелді болуы мүмкін.",
+      ],
+    },
+
+    {
+      type: "example_steps",
+      title: "Мысал (қадамдап түсіндіру)",
+      task: "x² + ax + 1 = 0 теңдеуінің 1 түбірі болуы үшін a тап",
+      steps: [
+        String.raw`D = a^2 - 4`,
+        String.raw`D = 0`,
+        String.raw`a^2 = 4`,
+        String.raw`a = ±2`,
+      ],
+      answer: String.raw`a = ±2`,
+    },
+  ],
+},
+        ],
+      };
+
+      // ============================================================
+      // UTILITIES
+      // ============================================================
+      const makeClassPath = (grade) => `/c/aqylai/grade-${grade}`;
+      const makeTheoryPath = (grade) => `/c/aqylai/theory-${grade}`;
+      const makeTheoryLessonPath = (grade, lessonId) => `/c/aqylai/theory-${grade}/${lessonId}`;
+
+      const useRouterMock = () => {
+        const [path, setPath] = useState(window.location.hash.replace("#", "") || "/");
+        useEffect(() => {
+          const onHash = () => setPath(window.location.hash.replace("#", "") || "/");
+          window.addEventListener("hashchange", onHash);
+          return () => window.removeEventListener("hashchange", onHash);
+        }, []);
+        const push = (p) => { window.location.hash = p; };
+        return { path, push };
+      };
+
+      const renderLatexSafe = (s) => {
+        try { return katex.renderToString(String(s), { throwOnError: false }); }
+        catch { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+      };
+
+      const renderInlineMath = (s) => {
+        const text = String(s);
+        const parts = text.split(/(\$[^$]+\$)/g).filter(Boolean);
+        return parts.map(p => {
+          if (p.startsWith("$") && p.endsWith("$")) {
+            try { return katex.renderToString(p.slice(1,-1), { throwOnError: false }); }
+            catch { return p.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+          }
+          return p.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+        }).join("");
+      };
+
+      const renderMixed = (s) => {
+        const text = String(s);
+        if (text.includes("$")) return renderInlineMath(text);
+        const looksLike = /^[\s\\0-9a-zA-Z+\-*/^_=(){}\[\].,|:]+$/.test(text) && /\\|=|\^|_/.test(text);
+        if (looksLike) {
+          try { return katex.renderToString(text, { throwOnError: false }); }
+          catch { return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+        }
+        return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      };
+
+      // ============================================================
+      // TOP NAV
+      // ============================================================
+      const TopNav = ({ router }) => {
+        const [scrolled, setScrolled] = useState(false);
+        const [menuOpen, setMenuOpen] = useState(false);
+        
+        useEffect(() => {
+          const h = () => setScrolled(window.scrollY > 40);
+          window.addEventListener("scroll", h);
+          return () => window.removeEventListener("scroll", h);
+        }, []);
+
+        const goScroll = (id) => {
+          router.push("/");
+          setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 50);
+        };
+
+        return (
+          <nav style={{
+            position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)",
+            zIndex: 50, width: scrolled ? "82%" : "90%", maxWidth: "1100px",
+            transition: "all 0.4s ease",
+            background: scrolled ? "rgba(5,13,20,0.92)" : "rgba(8,15,23,0.75)",
+            backdropFilter: "blur(24px)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "50px",
+            padding: scrolled ? "10px 28px" : "14px 32px",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+          }}>
+            {/* Logo */}
+            <div onClick={() => router.push("/")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)", boxShadow: "0 0 10px var(--accent)" }} />
+              <span style={{ fontSize: 18, fontWeight: 700, color: "white", letterSpacing: "-0.02em" }}>
+                Aqyl<span style={{ color: "var(--accent)" }}>AI</span>
+              </span>
+            </div>
+
+            {/* Desktop menu */}
+            <div className="hidden md:flex" style={{ gap: 28 }}>
+              {[
+                { label: "Артықшылықтар", id: "about" },
+                { label: "Нәтижелер", id: "results" },
+                { label: "Теория", action: () => { const g = Number(localStorage.getItem("aqylai_grade")||8); router.push(makeTheoryPath(g)); } },
+                { label: "Байланыс", id: "contact" },
+              ].map((item,i) => (
+                <button key={i} className="nav-link"
+                  onClick={() => item.action ? item.action() : goScroll(item.id)}>
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Profile */}
+            <button className="btn-accent" style={{ borderRadius: 50, padding: "8px 20px", fontSize: 13 }}
+              onClick={() => router.push("/profile")}>
+              Профиль
+            </button>
+          </nav>
+        );
+      };
+
+      // ============================================================
+      // HERO SECTION
+      // ============================================================
+      const Hero = ({ onStart }) => {
+        const [tick, setTick] = useState(0);
+        useEffect(() => {
+          const id = setInterval(() => setTick(t => t+1), 80);
+          return () => clearInterval(id);
+        }, []);
+
+        const formulas = ["x^2+y^2=r^2", "\\lim_{x\\to\\infty}", "\\int f(x)dx", "\\frac{-b\\pm\\sqrt{D}}{2a}", "\\sum_{n=1}^{\\infty}", "e^{i\\pi}+1=0"];
+        
+        return (
+          <section style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden", paddingTop: 80 }}>
+            {/* Grid bg */}
+            <div className="grid-bg" style={{ position: "absolute", inset: 0, opacity: 0.4 }} />
+            
+            {/* Glow orbs */}
+            <div className="glow-orb" style={{ width: 500, height: 500, background: "radial-gradient(circle, rgba(16,212,160,0.12), transparent 70%)", top: "10%", right: "-100px" }} />
+            <div className="glow-orb" style={{ width: 400, height: 400, background: "radial-gradient(circle, rgba(99,102,241,0.1), transparent 70%)", bottom: "10%", left: "-80px" }} />
+
+            {/* BG text */}
+            <div className="hero-bg-text" style={{ position: "absolute", bottom: -20, left: "50%", transform: "translateX(-50%)", whiteSpace: "nowrap", opacity: 0.6 }}>
+              AQYLAI
+            </div>
+
+            <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center", width: "100%", position: "relative" }}>
+              {/* Left */}
+              <div className="fade-up">
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(16,212,160,0.08)", border: "1px solid rgba(16,212,160,0.2)", borderRadius: 50, padding: "6px 14px", fontSize: 12, color: "var(--accent)", marginBottom: 24, fontWeight: 600 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", animation: "glowPulse 2s ease infinite" }} />
+                  ZPD адаптивті оқу жүйесі
+                </div>
+
+                <h1 style={{ fontSize: "clamp(36px, 5vw, 62px)", fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.03em", color: "white", marginBottom: 20 }}>
+                  Математиканы<br />
+                  <span className="shimmer-text">AI-мен меңгер</span>
+                </h1>
+
+                <p style={{ fontSize: 17, color: "var(--text-muted)", lineHeight: 1.7, maxWidth: 440, marginBottom: 36 }}>
+                  Бейімделмелі алгоритм сенің деңгейіңді анықтап, қиындықты автоматты түрде реттейді. 7-11 сыныптар үшін.
+                </p>
+
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  <button className="btn-accent" onClick={onStart} style={{ borderRadius: 50, padding: "14px 32px", fontSize: 15, display: "flex", alignItems: "center", gap: 8 }}>
+                    Бастау
+                    <span style={{ fontSize: 18 }}>→</span>
+                  </button>
+                  <button className="btn-ghost" style={{ borderRadius: 50, padding: "14px 24px", fontSize: 15 }}
+                    onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}>
+                    Қалай жұмыс істейді?
+                  </button>
+                </div>
+
+                {/* Stats row */}
+                <div style={{ display: "flex", gap: 32, marginTop: 48, paddingTop: 32, borderTop: "1px solid var(--border)" }}>
+                  {[["7–11", "Сыныптар"], ["150+", "Тапсырма"], ["3", "Деңгей"]].map(([n,l],i) => (
+                    <div key={i}>
+                      <div style={{ fontSize: 24, fontWeight: 700, color: "var(--accent)" }}>{n}</div>
+                      <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right - orbit */}
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div className="orbit-container float" style={{ width: 340, height: 340, position: "relative" }}>
+                  <div className="orbit-ring" />
+                  <div className="orbit-center" style={{
+                    position: "absolute", top: "50%", left: "50%",
+                    transform: "translate(-50%,-50%)", width: 110, height: 110,
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, rgba(16,212,160,0.15), rgba(99,102,241,0.1))",
+                    border: "1px solid var(--border-accent)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 40,
+                    boxShadow: "0 0 40px rgba(16,212,160,0.15)",
+                  }}>
+                    🧠
+                  </div>
+                  
+                  {formulas.map((f, i) => {
+                    const angle = (i / formulas.length) * 360;
+                    const rad = (angle * Math.PI) / 180;
+                    const r = 155;
+                    const x = Math.cos(rad) * r;
+                    const y = Math.sin(rad) * r;
+                    return (
+                      <div key={i} style={{
+                        position: "absolute", top: "50%", left: "50%",
+                        transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                        background: "var(--bg-card)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 10, padding: "6px 10px",
+                        fontSize: 12, color: "var(--text-muted)",
+                        whiteSpace: "nowrap",
+                        opacity: 0.85,
+                      }} dangerouslySetInnerHTML={{ __html: renderLatexSafe(f) }} />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // ============================================================
+      // FEATURES SECTION
+      // ============================================================
+      const FeaturesSection = () => {
+        const features = [
+          { icon: "🧬", title: "ZPD Адаптация", desc: "Жигоцкий теориясына негізделген. Жеңілден қиынға автоматты өту.", color: "rgba(16,212,160,0.1)", border: "rgba(16,212,160,0.2)" },
+          { icon: "🤖", title: "AI Тьютор", desc: "GitHub Models арқылы нақты уақытта Сократтық үлгіде кеңес.", color: "rgba(99,102,241,0.1)", border: "rgba(99,102,241,0.2)" },
+          { icon: "📊", title: "Прогресс", desc: "XP жүйесі, бейдждер, деңгейлер және апталық мақсаттар.", color: "rgba(245,158,11,0.1)", border: "rgba(245,158,11,0.2)" },
+          { icon: "📖", title: "Теория", desc: "Интерактивті формулалар, мысалдар және қадамдық түсіндірме.", color: "rgba(236,72,153,0.1)", border: "rgba(236,72,153,0.2)" },
+          { icon: "🎯", title: "Дейінгі нәтиже", desc: "Жылдам жауапқа, нақты түсіндіруге, ұзақ мерзімді есте сақтауға баулу.", color: "rgba(139,92,246,0.1)", border: "rgba(139,92,246,0.2)" },
+          { icon: "🏆", title: "Геймификация", desc: "Streak, XP, Leaderboard – оқуды марапатқа айналдыр.", color: "rgba(16,212,160,0.08)", border: "rgba(16,212,160,0.15)" },
+        ];
+
+        return (
+          <section id="about" style={{ padding: "100px 24px", position: "relative" }}>
+            <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+              <div style={{ textAlign: "center", marginBottom: 64 }}>
+                <div style={{ display: "inline-block", background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 50, padding: "5px 14px", fontSize: 12, color: "#a5b4fc", fontWeight: 600, marginBottom: 16 }}>
+                  Артықшылықтар
+                </div>
+                <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 800, color: "white", letterSpacing: "-0.03em", marginBottom: 16 }}>
+                  AqylAI-дың басты мүмкіндіктері
+                </h2>
+                <p style={{ color: "var(--text-muted)", maxWidth: 500, margin: "0 auto" }}>
+                  Дәстүрлі оқу сарайынан ерекше — жеке деңгейге бейімделген, жасанды интеллектпен нығайтылған жүйе.
+                </p>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+                {features.map((f, i) => (
+                  <div key={i} className="topic-card" style={{ padding: 24 }}>
+                    <div style={{ width: 50, height: 50, borderRadius: 12, background: f.color, border: `1px solid ${f.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 16 }}>
+                      {f.icon}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: 16, color: "white", marginBottom: 8 }}>{f.title}</div>
+                    <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.6 }}>{f.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // ============================================================
+      // RESULTS SECTION  
+      // ============================================================
+      const ResultsSection = () => {
+        const [visible, setVisible] = useState(false);
+        const ref = useRef(null);
+        
+        useEffect(() => {
+          const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.3 });
+          if (ref.current) obs.observe(ref.current);
+          return () => obs.disconnect();
+        }, []);
+
+        const stats = [
+          { val: 92, label: "Оқушылардың ұпай өсімі", unit: "%" },
+          { val: 3, label: "Апталық дайындық уақыты", unit: "сағ" },
+          { val: 87, label: "ҰБТ-да максималды балл", unit: "%" },
+        ];
+
+        return (
+          <section id="results" ref={ref} style={{ padding: "100px 24px", background: "linear-gradient(180deg, transparent, rgba(13,26,38,0.5), transparent)" }}>
+            <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+              <div style={{ textAlign: "center", marginBottom: 64 }}>
+                <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 800, color: "white", letterSpacing: "-0.03em", marginBottom: 16 }}>
+                  Нәтижелер өзі айтады
+                </h2>
+                <p style={{ color: "var(--text-muted)" }}>Адаптивті жүйе + AI тьютор = нақты нәтиже</p>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+                {stats.map((s, i) => (
+                  <div key={i} className="stat-card" style={{ textAlign: "center", padding: "40px 24px" }}>
+                    <div style={{
+                      fontSize: 52, fontWeight: 800, letterSpacing: "-0.04em",
+                      background: "linear-gradient(135deg, var(--accent), #6ee7d4)",
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                      transition: "all 1s ease",
+                    }}>
+                      {visible ? s.val : 0}{s.unit}
+                    </div>
+                    <div style={{ color: "var(--text-muted)", marginTop: 8, fontSize: 14 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Testimonials */}
+              <div style={{ marginTop: 48, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
+                {[
+                  { name: "Айгерім, 11-сынып", text: "AI тьютор менің қатемді дереу тауып, бір қадамда түсіндіреді. Бұрынғы дайындық курстарына қарағанда екі есе тиімді.", grade: "99 балл" },
+                  { name: "Темірлан, 10-сынып", text: "Деңгей автоматты өзгереді — бірден қиын тапсырмаға секірмей, дайын болғанда ғана.", grade: "94 балл" },
+                  { name: "Дана, 9-сынып", text: "Теория бөлімі өте нақты. KaTeX формулалары, қадамдар — бәрі анық.", grade: "87 балл" },
+                ].map((t, i) => (
+                  <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 16, padding: "24px" }}>
+                    <div style={{ fontSize: 13, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 16 }}>"{t.text}"</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ fontWeight: 600, fontSize: 13, color: "white" }}>{t.name}</div>
+                      <div style={{ fontSize: 12, color: "var(--accent)", fontWeight: 700, background: "rgba(16,212,160,0.1)", padding: "3px 10px", borderRadius: 50 }}>{t.grade}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // ============================================================
+      // CONTACT/CTA SECTION
+      // ============================================================
+      const ContactSection = () => {
+        const [submitted, setSubmitted] = useState(false);
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          setSubmitted(true);
+          setTimeout(() => setSubmitted(false), 3000);
+        };
+
+        return (
+          <section id="contact" style={{ padding: "100px 24px" }}>
+            <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 800, color: "white", letterSpacing: "-0.03em", marginBottom: 16 }}>
+                AqylAI-ды байқап көр
+              </h2>
+              <p style={{ color: "var(--text-muted)", marginBottom: 40 }}>
+                Байланыс қалдыр — менеджер сізбен хабарласады
+              </p>
+
+              {submitted ? (
+                <div style={{ background: "rgba(16,212,160,0.1)", border: "1px solid rgba(16,212,160,0.3)", borderRadius: 16, padding: "24px", color: "var(--accent)", fontSize: 16, fontWeight: 600 }}>
+                  ✓ Өтініміңіз қабылданды! Жақында хабарласамыз.
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <input className="input-field" type="text" placeholder="Аты-жөніңіз" required style={{ padding: "14px 18px", borderRadius: 12 }} />
+                  <input className="input-field" type="tel" placeholder="+7 (777) 777 77 77" required style={{ padding: "14px 18px", borderRadius: 12 }} />
+                  <button type="submit" className="btn-accent" style={{ borderRadius: 12, padding: "14px", fontSize: 15 }}>
+                    Өтінім қалдыру →
+                  </button>
+                </form>
+              )}
+            </div>
+          </section>
+        );
+      };
+
+      // ============================================================
+      // FOOTER
+      // ============================================================
+      const Footer = ({ router }) => (
+        <footer style={{ background: "rgba(5,13,20,0.9)", borderTop: "1px solid var(--border)", padding: "40px 24px 24px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 32, marginBottom: 32 }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)" }} />
+                  <span style={{ fontWeight: 700, color: "white", fontSize: 16 }}>Aqyl<span style={{ color: "var(--accent)" }}>AI</span></span>
+                </div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)", maxWidth: 240, lineHeight: 1.6 }}>ҰБТ-ға дайындықтың ең тиімді жолы. AI-мен бірге жет арманыңа.</div>
+              </div>
+              <div style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
+                {[
+                  { title: "Платформа", links: ["Біз туралы", "Жаңалықтар", "Команда"] },
+                  { title: "Байланыс", links: ["+7 (777) 116 04 45", "aqylai@edu.kz"] },
+                ].map((col, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "white", textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 16 }}>{col.title}</div>
+                    {col.links.map((l, j) => (
+                      <div key={j} style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 10, cursor: "pointer" }}
+                        className="nav-link">{l}</div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ borderTop: "1px solid var(--border)", paddingTop: 20, display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-dim)" }}>
+              <div>© 2026 AqylAI. Барлық құқықтар сақталған.</div>
+              <div>Made with <span style={{ color: "var(--accent)" }}>♥</span> for students</div>
+            </div>
+          </div>
+        </footer>
+      );
+
+      // ============================================================
+      // GRADE PICKER MODAL
+      // ============================================================
+      const GradePickerModal = ({ open, onClose, onPick }) => {
+        if (!open) return null;
+        const grades = [7, 8, 9, 10, 11];
+        return (
+          <div style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
+            display: "grid", placeItems: "center", padding: 16
+          }} onClick={onClose}>
+            <div style={{
+              background: "var(--bg-card)", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 24, padding: 32, width: "100%", maxWidth: 440,
+              boxShadow: "0 32px 80px rgba(0,0,0,0.5)"
+            }} onClick={e => e.stopPropagation()} className="fade-up">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "white" }}>Сыныпты таңда</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>7-ден 11-ге дейін</div>
+                </div>
+                <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 18 }}>×</button>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
+                {grades.map(g => (
+                  <button key={g} onClick={() => { localStorage.setItem("aqylai_grade", g); onPick(g); }}
+                    style={{
+                      aspectRatio: "1", borderRadius: 14,
+                      background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)",
+                      color: "white", fontSize: 20, fontWeight: 700, cursor: "pointer",
+                      transition: "all 0.2s", fontFamily: "Sora, sans-serif"
+                    }}
+                    onMouseEnter={e => { e.target.style.background="rgba(16,212,160,0.12)"; e.target.style.borderColor="var(--border-accent)"; e.target.style.color="var(--accent)"; }}
+                    onMouseLeave={e => { e.target.style.background="rgba(255,255,255,0.04)"; e.target.style.borderColor="var(--border)"; e.target.style.color="white"; }}>
+                    {g}
+                  </button>
+                ))}
+              </div>
+              <p style={{ marginTop: 20, fontSize: 13, color: "var(--text-muted)" }}>
+                Таңдағаннан кейін тапсырмалар бөліміне өтесіз.
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // TASK CARD
+      // ============================================================
+      const TaskCard = ({ idx, task, onCheck, onAnswerChange, historyEntry }) => {
+        const [input, setInput] = useState("");
+        const [status, setStatus] = useState(null);
+        const [shake, setShake] = useState(false);
+
+        useEffect(() => {
+          if (historyEntry) { setInput(historyEntry.answer); setStatus(historyEntry.correct); }
+          else { setInput(""); setStatus(null); }
+        }, [task?.id]);
+
+        const norm = (s) => s.replace(/\s+/g, "").toLowerCase();
+
+        const check = () => {
+          const ok = norm(input) === norm(task.a);
+          setStatus(ok);
+          onCheck?.(ok);
+          if (!ok) { setShake(true); setTimeout(() => setShake(false), 600); }
+        };
+
+        const borderColor = status === true ? "rgba(16,212,160,0.4)" : status === false ? "rgba(239,68,68,0.4)" : "var(--border)";
+        const bgColor = status === true ? "rgba(16,212,160,0.05)" : status === false ? "rgba(239,68,68,0.05)" : "var(--bg-card)";
+
+        return (
+          <div style={{
+            background: bgColor, border: `1px solid ${borderColor}`,
+            borderRadius: 20, padding: 24, transition: "all 0.3s",
+            animation: shake ? "shake 0.4s ease" : undefined,
+          }}>
+            <style>{`@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }`}</style>
+            
+            <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              Тапсырма {idx + 1}
+            </div>
+            
+            <div style={{ fontSize: 22, color: "white", marginBottom: 20 }}
+              dangerouslySetInnerHTML={{ __html: renderLatexSafe(task.q) }} />
+
+            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+              <input
+                className="input-field"
+                placeholder="Жауабыңыз..."
+                value={input}
+                onChange={e => { setInput(e.target.value); onAnswerChange?.(e.target.value); }}
+                onKeyDown={e => e.key === "Enter" && check()}
+                style={{ flex: 1, padding: "11px 16px" }}
+                disabled={status === true}
+              />
+              <button
+                onClick={check}
+                disabled={!input.trim() || status === true}
+                className="btn-accent"
+                style={{ borderRadius: 10, padding: "11px 20px", fontSize: 14, whiteSpace: "nowrap", opacity: (!input.trim() || status === true) ? 0.5 : 1 }}>
+                Тексеру
+              </button>
+            </div>
+
+            {status !== null && (
+              <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 8, fontSize: 14, fontWeight: 600, color: status ? "var(--accent)" : "#f87171" }}>
+                <span style={{ fontSize: 18 }}>{status ? "✓" : "✗"}</span>
+                {status ? "Дұрыс! Жарайсыз!" : "Қате. Тағы бір рет ойлан."}
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      // ============================================================
+      // SHARED AI FETCH — with wake-up retry + timeout
+      // ============================================================
+      const BASE_URL = (location.hostname === "127.0.0.1" || location.hostname === "localhost")
+        ? "http://127.0.0.1:8000"
+        : "https://backend-umur.onrender.com";
+
+      const fetchWithTimeout = (url, options, ms = 12000) => {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), ms);
+        return fetch(url, { ...options, signal: ctrl.signal })
+          .finally(() => clearTimeout(timer));
+      };
+
+      // Pings /health to wake the server, then retries the real request once
+      const aiRequest = async (payload, onStatus) => {
+        const API_URL = BASE_URL + "/api/ai";
+        const HEALTH_URL = BASE_URL + "/health";
+
+        const doFetch = () => fetchWithTimeout(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }, 15000);
+
+        try {
+          const resp = await doFetch();
+          if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+          return await resp.json();
+        } catch (e) {
+          const isNetworkErr = e.name === "AbortError" || e.message === "Failed to fetch" || e.name === "TypeError";
+          if (!isNetworkErr) throw e;
+
+          // Server is likely sleeping — ping /health to wake it, then retry once
+          onStatus?.("waking");
+          try {
+            await fetchWithTimeout(HEALTH_URL, {}, 30000);
+          } catch (_) { /* ignore — just waking */ }
+
+          onStatus?.("retrying");
+          const resp2 = await fetchWithTimeout(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }, 20000);
+          if (!resp2.ok) throw new Error(`Server error ${resp2.status}`);
+          return await resp2.json();
+        }
+      };
+
+      // ============================================================
+      // AI ASSISTANT PANEL
+      // ============================================================
+      const AssistantPanel = ({ task, userAnswer }) => {
+        const chatRef = useRef(null);
+        const [messages, setMessages] = useState([]);
+        const [text, setText] = useState("");
+        const [loading, setLoading] = useState(false);
+        const [loadingStatus, setLoadingStatus] = useState(""); // "", "waking", "retrying"
+        const [err, setErr] = useState(null);
+        const [lastCorrect, setLastCorrect] = useState(null);
+
+        useEffect(() => { setMessages([]); setText(""); setErr(null); setLoading(false); setLoadingStatus(""); setLastCorrect(null); }, [task?.id]);
+        useEffect(() => { if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight; }, [messages, loading]);
+
+        const send = async (userMessage) => {
+          const clean = (userMessage || "").trim();
+          if (!clean || loading) return;
+          setErr(null);
+          setMessages(prev => [...prev, { role: "user", content: clean }]);
+          setText("");
+          setLoading(true);
+          setLoadingStatus("");
+
+          try {
+            const data = await aiRequest({
+              taskText: task?.q || null,
+              expectedAnswer: task?.a || null,
+              userAnswer: userAnswer || null,
+              userMessage: clean,
+              history: messages,
+              lang: "kk",
+            }, setLoadingStatus);
+
+            let txt = data?.reply || "Жауап бос болды. Тағы бір рет сұрап көріңіз.";
+            if (Array.isArray(data?.steps) && data.steps.length)
+              txt += "\n\nҚадамдар:\n" + data.steps.map((s, i) => `${i + 1}) ${s}`).join("\n");
+            if (data?.short_hint) txt += `\n\nКеңес: ${data.short_hint}`;
+            if (data?.final_answer) txt += `\n\n✅ Қорытынды: ${data.final_answer}`;
+            setLastCorrect(data?.correct === true ? true : data?.correct === false ? false : null);
+            setMessages(prev => [...prev, { role: "assistant", content: txt }]);
+          } catch (e) {
+            const msg = e.name === "AbortError"
+              ? "Сервер жауап бермеді (timeout). Render.com серверін тексер."
+              : e.message === "Failed to fetch"
+              ? "Серверге жетпеді. Render.com ұйқыда болуы мүмкін — 30 сек күтіп қайталап көр."
+              : `Қате: ${e.message}`;
+            setErr(msg);
+          } finally {
+            setLoading(false);
+            setLoadingStatus("");
+          }
+        };
+
+        const quickBtns = [
+          { label: "💡 Hint", msg: "Маған өте қысқа hint берші (жауапты толық айтпай)." },
+          { label: "🔍 Түсіндір", msg: "Түсінбей тұрмын. Бір қадаммен түсіндірші, мен жалғастырайын." },
+          { label: "❌ Қате?", msg: "Менің қателігім қай жерде? Қысқаша көрсетші." },
+        ];
+
+        const statusLabel = {
+          waking: "⏳ Сервер оянуда (Render free tier)…",
+          retrying: "🔄 Қайта жіберілуде…",
+        }[loadingStatus] || "AI ойлануда…";
+
+        return (
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 20, overflow: "hidden" }}>
+            {/* Header */}
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: loading ? "#f59e0b" : "var(--accent2)",
+                  boxShadow: `0 0 10px ${loading ? "rgba(245,158,11,0.6)" : "rgba(99,102,241,0.5)"}`,
+                  animation: "glowPulse 2s ease infinite" }} />
+                <span style={{ fontWeight: 600, fontSize: 14, color: "white" }}>AI Тьютор</span>
+                {loading && (
+                  <span style={{ fontSize: 11, color: loadingStatus === "waking" ? "#fbbf24" : "var(--text-muted)", fontStyle: "italic" }}>
+                    {statusLabel}
+                  </span>
+                )}
+              </div>
+              <div style={{
+                fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 50,
+                ...(lastCorrect === true
+                  ? { background: "rgba(16,212,160,0.12)", color: "var(--accent)", border: "1px solid rgba(16,212,160,0.3)" }
+                  : lastCorrect === false
+                  ? { background: "rgba(239,68,68,0.12)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }
+                  : { background: "rgba(255,255,255,0.05)", color: "var(--text-muted)", border: "1px solid var(--border)" })
+              }}>
+                {lastCorrect === true ? "✓ Дұрыс" : lastCorrect === false ? "✗ Қате" : "—"}
+              </div>
+            </div>
+
+            {/* Current task */}
+            {task && (
+              <div style={{ padding: "10px 20px", borderBottom: "1px solid var(--border)", background: "rgba(0,0,0,0.2)" }}>
+                <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Тапсырма</div>
+                <div style={{ fontSize: 16, color: "white" }} dangerouslySetInnerHTML={{ __html: renderLatexSafe(task.q) }} />
+                {userAnswer?.trim() && (
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 5 }}>
+                    Жауабыңыз: <span style={{ color: "var(--text)" }}>{userAnswer}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Quick buttons */}
+            <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--border)", display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {quickBtns.map((b, i) => (
+                <button key={i} onClick={() => send(b.msg)} disabled={loading}
+                  className="btn-ghost" style={{ borderRadius: 8, padding: "5px 10px", fontSize: 12, opacity: loading ? 0.5 : 1, cursor: loading ? "not-allowed" : "pointer" }}>
+                  {b.label}
+                </button>
+              ))}
+              {messages.length > 0 && (
+                <button onClick={() => { setMessages([]); setErr(null); setLastCorrect(null); }} disabled={loading}
+                  className="btn-ghost" style={{ borderRadius: 8, padding: "5px 10px", fontSize: 12, marginLeft: "auto", opacity: loading ? 0.4 : 1 }}>
+                  🗑
+                </button>
+              )}
+            </div>
+
+            {/* Chat window */}
+            <div ref={chatRef} style={{ height: 260, overflowY: "auto", padding: "14px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {messages.length === 0 && !err && (
+                <div style={{ color: "var(--text-muted)", fontSize: 13, textAlign: "center", marginTop: 60, lineHeight: 1.7 }}>
+                  💬 Сұрағыңды жаз<br />немесе жоғарыдағы батырмаларды қолдан
+                </div>
+              )}
+              {messages.map((m, i) => (
+                <div key={i} className={m.role === "user" ? "msg-user" : "msg-ai"}
+                  style={{ maxWidth: "88%", padding: "10px 14px", borderRadius: 12, fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-wrap",
+                    alignSelf: m.role === "user" ? "flex-end" : "flex-start" }}>
+                  {m.content}
+                </div>
+              ))}
+              {loading && (
+                <div style={{ alignSelf: "flex-start", background: "var(--bg-card2)", border: "1px solid var(--border)", borderRadius: 12, padding: "12px 16px", display: "flex", gap: 6, alignItems: "center" }}>
+                  <div className="typing-dot" /><div className="typing-dot" /><div className="typing-dot" />
+                  {loadingStatus === "waking" && (
+                    <span style={{ fontSize: 11, color: "#fbbf24", marginLeft: 4 }}>Сервер оянуда…</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Error */}
+            {err && (
+              <div style={{ margin: "0 14px 10px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 12, padding: "12px 14px" }}>
+                <div style={{ fontSize: 12, color: "#f87171", marginBottom: 8, lineHeight: 1.5 }}>⚠ {err}</div>
+                <button onClick={() => { setErr(null); if (messages.length > 0) { const last = messages[messages.length-1]; if (last.role === "user") { setMessages(prev => prev.slice(0,-1)); send(last.content); } } }}
+                  style={{ padding: "5px 12px", borderRadius: 8, background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "Sora, sans-serif" }}>
+                  🔄 Қайталап көр
+                </button>
+              </div>
+            )}
+
+            {/* Input */}
+            <div style={{ padding: "10px 14px 14px", borderTop: "1px solid var(--border)", display: "flex", gap: 8 }}>
+              <textarea className="input-field"
+                placeholder="Сұрағыңды жаз… (Enter — жіберу)"
+                value={text}
+                onChange={e => setText(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(text); } }}
+                style={{ flex: 1, minHeight: 42, maxHeight: 100, resize: "none", padding: "10px 14px", fontSize: 13 }}
+              />
+              <button onClick={() => send(text)} disabled={loading || !text.trim()}
+                className="btn-accent" style={{ borderRadius: 10, padding: "0 16px", fontSize: 18, opacity: (loading || !text.trim()) ? 0.4 : 1, cursor: (loading || !text.trim()) ? "not-allowed" : "pointer" }}>
+                →
+              </button>
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // STAT CARD COMPONENT
+      // ============================================================
+      const StatCard = ({ title, value, icon, color = "var(--accent)" }) => (
+        <div className="stat-card">
+          {icon && <div style={{ fontSize: 20, marginBottom: 8 }}>{icon}</div>}
+          <div style={{ fontSize: 28, fontWeight: 800, color, letterSpacing: "-0.03em" }}>{value}</div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>{title}</div>
+        </div>
+      );
+
+      // ============================================================
+      // PROFILE VIEW
+      // ============================================================
+      const ProfileView = ({ onBack, onGoTasks }) => {
+        const currentUser = localStorage.getItem("aqylai_current_user");
+        const [name, setName] = useState(currentUser || "Оқушы");
+        const [editing, setEditing] = useState(false);
+        const grade = Number(localStorage.getItem("aqylai_grade") || 8);
+        const topics = TASK_BANK[grade] || {};
+
+        const topicStats = Object.entries(topics).map(([key, td]) => {
+          const raw = localStorage.getItem(`aqylai_progress_${grade}_${key}`);
+          const total = (td.easy?.length||0)+(td.medium?.length||0)+(td.hard?.length||0);
+          if (!raw) return { title: td.title, solved: 0, total, zpd: 0 };
+          const parsed = JSON.parse(raw);
+          return { title: td.title, solved: parsed.solved||0, total, zpd: parsed.zpd||0 };
+        });
+
+        const totalSolved = topicStats.reduce((s,t) => s+t.solved, 0);
+        const totalTasks = topicStats.reduce((s,t) => s+t.total, 0);
+        const overallPercent = totalTasks > 0 ? Math.round((totalSolved/totalTasks)*100) : 0;
+        const avgZpd = topicStats.length > 0 ? Math.round(topicStats.reduce((s,t)=>s+t.zpd,0)/topicStats.length) : 0;
+        const xp = totalSolved * 10 + avgZpd * 2;
+
+        const levels = [
+          { name: "Beginner 🌱", min: 0, next: 300 },
+          { name: "Explorer 🔍", min: 300, next: 800 },
+          { name: "Challenger ⚡", min: 800, next: 1500 },
+          { name: "Advanced 🎯", min: 1500, next: 2500 },
+          { name: "Master 🏆", min: 2500, next: 9999 },
+        ];
+        const currentLevel = levels.reduce((acc, l) => xp >= l.min ? l : acc, levels[0]);
+        const nextLevel = levels[levels.indexOf(currentLevel)+1];
+        const levelProgress = nextLevel ? Math.min(100, Math.round(((xp - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100)) : 100;
+
+        const streakDays = (() => {
+          const h = JSON.parse(localStorage.getItem("aqylai_growth")||"[]");
+          const today = new Date().toLocaleDateString();
+          if (!h.find(x=>x.date===today)) return 1;
+          return Math.min(h.length, 7);
+        })();
+
+        const badges = [];
+        if (xp >= 100) badges.push("🌱 Бастамашы");
+        if (totalSolved >= 10) badges.push("📚 10 есеп");
+        if (totalSolved >= 25) badges.push("🔥 25 есеп");
+        if (avgZpd >= 50) badges.push("⚡ ZPD 50+");
+        if (avgZpd >= 80) badges.push("🧠 ZPD Маэстро");
+        if (streakDays >= 3) badges.push("🔗 3 күн қатар");
+
+        const saveName = () => {
+          localStorage.setItem("aqylai_current_user", name);
+          setEditing(false);
+        };
+
+        return (
+          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "100px 24px 60px" }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+              <button onClick={onBack} className="btn-ghost" style={{ borderRadius: 50, padding: "8px 16px", fontSize: 13 }}>← Артқа</button>
+              <div style={{ fontSize: 22, fontWeight: 800, color: "white" }}>Профиль</div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 24 }}>
+              {/* Left panel */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {/* Avatar card */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                  <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, var(--accent), var(--accent2))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 16 }}>
+                    {name[0] || "О"}
+                  </div>
+                  {editing ? (
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <input className="input-field" value={name} onChange={e => setName(e.target.value)} onKeyDown={e => e.key === "Enter" && saveName()} style={{ flex: 1 }} autoFocus />
+                      <button onClick={saveName} className="btn-accent" style={{ borderRadius: 8, padding: "6px 12px" }}>✓</button>
+                    </div>
+                  ) : (
+                    <div onClick={() => setEditing(true)} style={{ fontSize: 18, fontWeight: 700, color: "white", cursor: "pointer" }}>{name}</div>
+                  )}
+                  <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 4 }}>{grade}-сынып</div>
+                </div>
+
+                {/* Level card */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.1em" }}>Деңгей</div>
+                  <div style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)", marginBottom: 16 }}>{currentLevel.name}</div>
+                  <div className="progress-bar">
+                    <div className="progress-fill" style={{ width: `${levelProgress}%` }} />
+                  </div>
+                  <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 8, display: "flex", justifyContent: "space-between" }}>
+                    <span>{xp} XP</span>
+                    {nextLevel && <span>→ {nextLevel.min} XP</span>}
+                  </div>
+                </div>
+
+                {/* Quick stats */}
+                <div style={{ background: "rgba(255,165,0,0.08)", border: "1px solid rgba(255,165,0,0.2)", borderRadius: 16, padding: "16px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 24 }}>🔥</span>
+                  <div>
+                    <div style={{ fontWeight: 700, color: "#fbbf24" }}>{streakDays} күн қатарынан</div>
+                    <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Белсенді кезең</div>
+                  </div>
+                </div>
+
+                <button onClick={() => onGoTasks(grade)} className="btn-accent" style={{ borderRadius: 14, padding: "14px", fontSize: 15, textAlign: "center" }}>
+                  Жалғастыру →
+                </button>
+                <button onClick={() => { localStorage.removeItem("aqylai_current_user"); window.location.reload(); }}
+                  style={{ borderRadius: 14, padding: "10px", fontSize: 13, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", cursor: "pointer", fontFamily: "Sora, sans-serif" }}>
+                  Шығу
+                </button>
+              </div>
+
+              {/* Right panel */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                {/* Stats row */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                  <StatCard title="Жалпы прогресс" value={`${overallPercent}%`} icon="📊" />
+                  <StatCard title="Орташа ZPD" value={`${avgZpd}%`} icon="🧠" color="var(--accent2)" />
+                  <StatCard title="XP ұпайлар" value={xp} icon="⭐" color="#fbbf24" />
+                </div>
+
+                {/* Weekly goal */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                    <div style={{ fontWeight: 700, color: "white" }}>🎯 Апталық мақсат</div>
+                    <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{totalSolved}/20 тапсырма</div>
+                  </div>
+                  <div className="progress-bar" style={{ height: 8 }}>
+                    <div className="progress-fill" style={{ width: `${Math.min(100, Math.round(totalSolved/20*100))}%`, height: "100%" }} />
+                  </div>
+                </div>
+
+                {/* Badges */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                  <div style={{ fontWeight: 700, color: "white", marginBottom: 16 }}>Бейдждер</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {badges.length === 0 ? (
+                      <div style={{ color: "var(--text-muted)", fontSize: 13 }}>Тапсырмаларды орындап бейдж жина!</div>
+                    ) : badges.map((b, i) => (
+                      <div key={i} style={{ padding: "6px 14px", borderRadius: 50, background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.25)", fontSize: 13, color: "#a5b4fc" }}>{b}</div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Topic progress */}
+                <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 20, padding: 24 }}>
+                  <div style={{ fontWeight: 700, color: "white", marginBottom: 16 }}>Тақырыптар бойынша</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {topicStats.map((t, i) => {
+                      const p = t.total > 0 ? Math.round((t.solved/t.total)*100) : 0;
+                      return (
+                        <div key={i}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
+                            <span style={{ color: "var(--text)" }}>{t.title}</span>
+                            <span style={{ color: "var(--text-muted)" }}>{t.solved}/{t.total}</span>
+                          </div>
+                          <div className="progress-bar" style={{ height: 6 }}>
+                            <div className="progress-fill" style={{ width: `${p}%`, height: "100%" }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // THEORY AI EXPLAINER — inline per-section AI panel
+      // ============================================================
+      const TheoryAIExplainer = ({ context, lessonTitle }) => {
+        const [open, setOpen] = useState(false);
+        const [reply, setReply] = useState(null);
+        const [loading, setLoading] = useState(false);
+        const [err, setErr] = useState(null);
+        const [customQ, setCustomQ] = useState("");
+        const [mode, setMode] = useState("quick"); // quick | custom
+
+        const presets = [
+          { label: "Қарапайым түсіндір", q: `"${lessonTitle}" тақырыбын 7-сыныпшыға түсіндіргендей өте қарапайым тілмен айт.` },
+          { label: "Мысал бер", q: `"${lessonTitle}" тақырыбына нақты өмірден 1 мысал кел.` },
+          { label: "Жалпы қателер", q: `"${lessonTitle}" тақырыбын оқығанда оқушылар жиі қандай қате жасайды?` },
+          { label: "Формуланы түсіндір", q: `"${lessonTitle}" бөліміндегі формуланы толығырақ түсіндіреміз, контекст: ${context}` },
+        ];
+
+        const [wakingUp, setWakingUp] = useState(false);
+
+        const ask = async (question) => {
+          setReply(null); setErr(null); setLoading(true); setWakingUp(false);
+          try {
+            const data = await aiRequest({
+              taskText: lessonTitle, userMessage: question,
+              history: [], lang: "kk", userAnswer: null, expectedAnswer: null,
+            }, (status) => { if (status === "waking") setWakingUp(true); else setWakingUp(false); });
+            setReply(data?.reply || "Жауап бос болды.");
+          } catch(e) {
+            setErr(e.name === "AbortError" || e.message === "Failed to fetch"
+              ? "Сервер оянуда, қайталап көр…"
+              : e.message);
+          }
+          finally { setLoading(false); setWakingUp(false); }
+        };
+
+        if (!open) return (
+          <button onClick={() => setOpen(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 12px", borderRadius: 8,
+              background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)",
+              color: "#a5b4fc", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "Sora, sans-serif",
+              transition: "all 0.2s" }}>
+            🤖 AI-ге сұра
+          </button>
+        );
+
+        return (
+          <div style={{ marginTop: 12, background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: 14, overflow: "hidden" }}>
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: "1px solid rgba(99,102,241,0.15)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#818cf8", animation: "glowPulse 2s infinite" }} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#a5b4fc" }}>AI Тьютор сұрақ</span>
+              </div>
+              <button onClick={() => { setOpen(false); setReply(null); setErr(null); }}
+                style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>×</button>
+            </div>
+
+            {/* Preset buttons */}
+            <div style={{ padding: "10px 16px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {presets.map((p, i) => (
+                <button key={i} onClick={() => { setMode("quick"); ask(p.q); }}
+                  disabled={loading}
+                  style={{ padding: "5px 10px", borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "Sora, sans-serif",
+                    background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.2)", color: "#c7d2fe",
+                    opacity: loading ? 0.5 : 1, transition: "all 0.15s" }}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Custom question */}
+            <div style={{ padding: "0 16px 10px", display: "flex", gap: 8 }}>
+              <input className="input-field"
+                placeholder="Өз сұрағыңды жаз..."
+                value={customQ} onChange={e => setCustomQ(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && customQ.trim() && (ask(customQ), setCustomQ(""))}
+                style={{ fontSize: 12 }} />
+              <button onClick={() => { if(customQ.trim()) { ask(customQ); setCustomQ(""); } }}
+                disabled={loading || !customQ.trim()}
+                style={{ padding: "0 14px", borderRadius: 8, background: "#6366f1", border: "none", color: "white",
+                  fontSize: 16, cursor: "pointer", opacity: (loading||!customQ.trim()) ? 0.4 : 1 }}>→</button>
+            </div>
+
+            {/* Response area */}
+            {(loading || reply || err) && (
+              <div style={{ margin: "0 16px 14px", padding: "12px 14px", borderRadius: 10, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.06)", minHeight: 44 }}>
+                {loading && (
+                  <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+                    <div className="typing-dot" style={{ background: "#818cf8" }} />
+                    <div className="typing-dot" style={{ background: "#818cf8" }} />
+                    <div className="typing-dot" style={{ background: "#818cf8" }} />
+                    <span style={{ fontSize: 12, color: wakingUp ? "#fbbf24" : "var(--text-muted)", marginLeft: 6 }}>
+                      {wakingUp ? "⏳ Сервер оянуда…" : "AI ойлануда…"}
+                    </span>
+                  </div>
+                )}
+                {reply && <div style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{reply}</div>}
+                {err && <div style={{ fontSize: 12, color: "#f87171" }}>⚠ {err}</div>}
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      // ============================================================
+      // FORMULA BLOCK — with copy button
+      // ============================================================
+      const FormulaBlock = ({ title, formula }) => {
+        const [copied, setCopied] = useState(false);
+        const copy = () => {
+          navigator.clipboard?.writeText(formula).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); });
+        };
+        return (
+          <div style={{ background: "linear-gradient(135deg, rgba(16,212,160,0.06), rgba(16,212,160,0.02))", border: "1px solid rgba(16,212,160,0.25)", borderRadius: 16, overflow: "hidden" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: "1px solid rgba(16,212,160,0.12)", background: "rgba(16,212,160,0.04)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 14 }}>📐</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{title}</span>
+              </div>
+              <button onClick={copy}
+                style={{ padding: "3px 10px", borderRadius: 6, background: copied ? "rgba(16,212,160,0.2)" : "rgba(255,255,255,0.05)",
+                  border: `1px solid ${copied ? "rgba(16,212,160,0.4)" : "var(--border)"}`, color: copied ? "var(--accent)" : "var(--text-muted)",
+                  fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "Sora, sans-serif", transition: "all 0.2s" }}>
+                {copied ? "✓ Көшірілді" : "Көшіру"}
+              </button>
+            </div>
+            <div style={{ padding: "20px 24px", textAlign: "center" }}
+              dangerouslySetInnerHTML={{ __html: katex.renderToString(formula, { throwOnError: false, displayMode: true }) }} />
+          </div>
+        );
+      };
+
+      // ============================================================
+      // STEP-THROUGH EXAMPLE — animated reveal
+      // ============================================================
+      const StepThroughExample = ({ sec }) => {
+        const [revealed, setRevealed] = useState(0);
+        const [showAnswer, setShowAnswer] = useState(false);
+        const steps = sec.steps || [];
+        const allDone = revealed >= steps.length;
+
+        const reset = () => { setRevealed(0); setShowAnswer(false); };
+
+        return (
+          <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)", borderRadius: 16, overflow: "hidden" }}>
+            {/* Header */}
+            <div style={{ padding: "10px 16px 10px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.02)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 14 }}>🔢</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{sec.title}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{Math.min(revealed, steps.length)}/{steps.length} қадам</span>
+                {revealed > 0 && (
+                  <button onClick={reset}
+                    style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "var(--text-muted)", fontSize: 10, cursor: "pointer", fontFamily: "Sora, sans-serif" }}>
+                    ↺ Қайта
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div style={{ padding: 20 }}>
+              {/* Task */}
+              {sec.task && (
+                <div style={{ marginBottom: 20, padding: "12px 16px", background: "rgba(0,0,0,0.3)", borderRadius: 12, borderLeft: "3px solid var(--accent)" }}>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 6, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Есеп:</div>
+                  <div style={{ color: "white", fontSize: 17 }} dangerouslySetInnerHTML={{ __html: renderMixed(sec.task) }} />
+                </div>
+              )}
+
+              {/* Steps */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {steps.map((s, j) => {
+                  const visible = j < revealed;
+                  return (
+                    <div key={j} style={{
+                      display: "flex", gap: 14, alignItems: "flex-start",
+                      opacity: visible ? 1 : 0.15, transition: "opacity 0.4s ease, transform 0.4s ease",
+                      transform: visible ? "translateX(0)" : "translateX(-8px)",
+                    }}>
+                      <div style={{
+                        minWidth: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+                        background: visible ? "rgba(16,212,160,0.15)" : "rgba(255,255,255,0.04)",
+                        border: `1px solid ${visible ? "rgba(16,212,160,0.4)" : "var(--border)"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 11, fontWeight: 700,
+                        color: visible ? "var(--accent)" : "var(--text-dim)",
+                        transition: "all 0.4s ease",
+                      }}>{j+1}</div>
+                      <div style={{ fontSize: 14, color: visible ? "var(--text)" : "var(--text-dim)", paddingTop: 5, lineHeight: 1.6, transition: "color 0.4s ease" }}
+                        dangerouslySetInnerHTML={{ __html: renderMixed(s) }} />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Answer */}
+              {allDone && sec.answer && (
+                <div style={{ marginTop: 16 }}>
+                  {!showAnswer ? (
+                    <button onClick={() => setShowAnswer(true)}
+                      style={{ padding: "8px 18px", borderRadius: 10, background: "rgba(16,212,160,0.1)", border: "1px solid rgba(16,212,160,0.25)", color: "var(--accent)", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "Sora, sans-serif" }}>
+                      ✓ Жауапты көрсет
+                    </button>
+                  ) : (
+                    <div style={{ padding: "12px 16px", background: "rgba(16,212,160,0.08)", border: "1px solid rgba(16,212,160,0.25)", borderRadius: 12, display: "flex", gap: 10, alignItems: "center", animation: "fadeIn 0.3s ease" }}>
+                      <span style={{ color: "var(--accent)", fontWeight: 700, fontSize: 14 }}>✓</span>
+                      <div dangerouslySetInnerHTML={{ __html: renderMixed(sec.answer) }} style={{ color: "white", fontSize: 15 }} />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Next step button */}
+              {!allDone && (
+                <button onClick={() => setRevealed(r => r + 1)}
+                  className="btn-accent"
+                  style={{ marginTop: 16, borderRadius: 10, padding: "9px 20px", fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
+                  {revealed === 0 ? "Бастау" : "Келесі қадам"} →
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // THEORY VIEW — complete redesign
+      // ============================================================
+      const TheoryView = ({ grade, lessonId, onBack, onOpenLesson, onPickGrade, onGoTasks }) => {
+        const lessons = useMemo(() => THEORY_BANK[grade] || [], [grade]);
+        const [query, setQuery] = useState("");
+        const [readProgress, setReadProgress] = useState(0);
+        const contentRef = useRef(null);
+        const pageRef = useRef(null);
+
+        // Reading progress tracker
+        useEffect(() => {
+          const el = pageRef.current;
+          if (!el) return;
+          const track = () => {
+            const scrolled = window.scrollY;
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            setReadProgress(total > 0 ? Math.min(100, Math.round((scrolled / total) * 100)) : 0);
+          };
+          window.addEventListener("scroll", track, { passive: true });
+          return () => window.removeEventListener("scroll", track);
+        }, []);
+
+        const filtered = useMemo(() => {
+          const q = query.trim().toLowerCase();
+          if (!q) return lessons;
+          return lessons.filter(l => l.title.toLowerCase().includes(q) || (l.summary||"").toLowerCase().includes(q));
+        }, [lessons, query]);
+
+        const activeLesson = lessons.find(l => l.id === lessonId) || filtered[0] || lessons[0] || null;
+        const lessonIndex = lessons.findIndex(l => l.id === activeLesson?.id);
+        const prevLesson = lessonIndex > 0 ? lessons[lessonIndex - 1] : null;
+        const nextLesson = lessonIndex < lessons.length - 1 ? lessons[lessonIndex + 1] : null;
+
+        // Track completed lessons
+        const storageKey = `aqylai_theory_done_${grade}`;
+        const [doneLessons, setDoneLessons] = useState(() => JSON.parse(localStorage.getItem(storageKey) || "[]"));
+        const markDone = (id) => {
+          const updated = [...new Set([...doneLessons, id])];
+          setDoneLessons(updated);
+          localStorage.setItem(storageKey, JSON.stringify(updated));
+        };
+
+        useEffect(() => {
+          if (activeLesson?.id) {
+            localStorage.setItem(`aqylai_theory_last_${grade}`, activeLesson.id);
+            // Scroll content to top on lesson change
+            contentRef.current?.scrollTo({ top: 0 });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }, [grade, activeLesson?.id]);
+
+        // Map lesson id to topic key for "Practice" button
+        const topicKeyForLesson = useMemo(() => {
+          if (!activeLesson) return null;
+          const topicMap = TASK_BANK[grade] || {};
+          const title = (activeLesson.title || "").toLowerCase();
+          return Object.keys(topicMap).find(k => topicMap[k].title?.toLowerCase() === title) || null;
+        }, [activeLesson, grade]);
+
+        const sectionCount = (activeLesson?.sections || []).length;
+
+        return (
+          <div ref={pageRef} style={{ minHeight: "100vh" }}>
+            {/* Reading progress bar — fixed top */}
+            <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 3, zIndex: 200, background: "rgba(255,255,255,0.05)" }}>
+              <div style={{ height: "100%", background: "linear-gradient(90deg, var(--accent), #6366f1)", width: `${readProgress}%`, transition: "width 0.1s linear" }} />
+            </div>
+
+            <div style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 24px 80px" }}>
+
+              {/* ── TOP BAR ── */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28, flexWrap: "wrap" }}>
+                <button onClick={onBack} className="btn-ghost" style={{ borderRadius: 50, padding: "8px 16px", fontSize: 13, flexShrink: 0 }}>← Артқа</button>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 18 }}>📖</span>
+                  <h1 style={{ fontSize: 20, fontWeight: 800, color: "white", margin: 0, letterSpacing: "-0.02em" }}>Теория</h1>
+                </div>
+
+                {/* Grade switcher */}
+                <div style={{ marginLeft: "auto", display: "flex", gap: 6, background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)", borderRadius: 12, padding: 4 }}>
+                  {[7,8,9,10,11].map(g => (
+                    <button key={g} onClick={() => onPickGrade(g)}
+                      style={{
+                        width: 36, height: 32, borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "Sora, sans-serif",
+                        background: g === grade ? "var(--accent)" : "transparent",
+                        color: g === grade ? "#050d14" : "var(--text-muted)",
+                        border: "none", transition: "all 0.2s",
+                      }}>{g}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── MAIN LAYOUT ── */}
+              <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 24, alignItems: "start" }}>
+
+                {/* ── SIDEBAR ── */}
+                <div style={{ position: "sticky", top: 84, display: "flex", flexDirection: "column", gap: 0, background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 18, overflow: "hidden" }}>
+                  {/* Sidebar header */}
+                  <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", background: "rgba(255,255,255,0.02)" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 8 }}>
+                      {doneLessons.length}/{lessons.length} аяқталды
+                    </div>
+                    <div style={{ height: 4, background: "var(--bg-card2)", borderRadius: 2, overflow: "hidden" }}>
+                      <div style={{ height: "100%", background: "var(--accent)", width: `${lessons.length ? Math.round((doneLessons.length/lessons.length)*100) : 0}%`, transition: "width 0.5s ease" }} />
+                    </div>
+                  </div>
+
+                  {/* Search */}
+                  <div style={{ padding: "10px 12px", borderBottom: "1px solid var(--border)" }}>
+                    <input className="input-field" placeholder="🔍 Іздеу..." value={query} onChange={e => setQuery(e.target.value)}
+                      style={{ fontSize: 12, padding: "7px 10px" }} />
+                  </div>
+
+                  {/* Lesson list */}
+                  <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 280px)" }}>
+                    {filtered.map((lesson, idx) => {
+                      const isActive = lesson.id === activeLesson?.id;
+                      const isDone = doneLessons.includes(lesson.id);
+                      return (
+                        <button key={lesson.id}
+                          onClick={() => onOpenLesson(grade, lesson.id)}
+                          style={{
+                            width: "100%", textAlign: "left", padding: "11px 14px",
+                            borderBottom: "1px solid rgba(255,255,255,0.04)",
+                            cursor: "pointer", transition: "all 0.15s", fontFamily: "Sora, sans-serif",
+                            background: isActive ? "rgba(16,212,160,0.08)" : "transparent",
+                            borderLeft: `3px solid ${isActive ? "var(--accent)" : "transparent"}`,
+                            borderRight: "none", borderTop: "none",
+                            display: "flex", alignItems: "flex-start", gap: 10,
+                          }}>
+                          <div style={{ marginTop: 2, flexShrink: 0 }}>
+                            {isDone
+                              ? <div style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#050d14", fontWeight: 900 }}>✓</div>
+                              : <div style={{ width: 16, height: 16, borderRadius: "50%", border: `1px solid ${isActive ? "var(--accent)" : "var(--border)"}`, fontSize: 9, color: "var(--text-dim)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>{idx+1}</div>
+                            }
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 600, fontSize: 12, color: isActive ? "var(--accent)" : isDone ? "var(--text-muted)" : "var(--text)", lineHeight: 1.4 }}>{lesson.title}</div>
+                            {lesson.summary && <div style={{ fontSize: 10, marginTop: 2, color: "var(--text-dim)", lineHeight: 1.4 }}>{lesson.summary}</div>}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── CONTENT AREA ── */}
+                {activeLesson ? (
+                  <div ref={contentRef} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+                    {/* Lesson header card */}
+                    <div style={{ background: "linear-gradient(135deg, rgba(16,212,160,0.07), rgba(99,102,241,0.05))", border: "1px solid rgba(16,212,160,0.2)", borderRadius: 20, padding: "28px 32px", position: "relative", overflow: "hidden" }}>
+                      {/* Background decoration */}
+                      <div style={{ position: "absolute", right: -40, top: -40, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,212,160,0.08), transparent 70%)", pointerEvents: "none" }} />
+
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                              {grade}-сынып · Тақырып {lessonIndex + 1}/{lessons.length}
+                            </div>
+                            {doneLessons.includes(activeLesson.id) && (
+                              <div style={{ padding: "2px 8px", borderRadius: 50, background: "rgba(16,212,160,0.12)", border: "1px solid rgba(16,212,160,0.3)", fontSize: 10, color: "var(--accent)", fontWeight: 700 }}>
+                                ✓ Аяқталды
+                              </div>
+                            )}
+                          </div>
+                          <h2 style={{ fontSize: 26, fontWeight: 800, color: "white", letterSpacing: "-0.03em", margin: "0 0 8px" }}>{activeLesson.title}</h2>
+                          {activeLesson.summary && (
+                            <p style={{ fontSize: 14, color: "var(--text-muted)", margin: 0, lineHeight: 1.6 }}>{activeLesson.summary}</p>
+                          )}
+                        </div>
+
+                        {/* Action buttons */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
+                          {!doneLessons.includes(activeLesson.id) && (
+                            <button onClick={() => markDone(activeLesson.id)}
+                              style={{ padding: "8px 16px", borderRadius: 10, background: "rgba(16,212,160,0.1)", border: "1px solid rgba(16,212,160,0.25)", color: "var(--accent)", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "Sora, sans-serif", whiteSpace: "nowrap" }}>
+                              ✓ Аяқталды деп белгіле
+                            </button>
+                          )}
+                          {topicKeyForLesson && onGoTasks && (
+                            <button onClick={() => onGoTasks(grade, topicKeyForLesson)}
+                              className="btn-accent" style={{ borderRadius: 10, padding: "8px 16px", fontSize: 12, whiteSpace: "nowrap" }}>
+                              🎯 Тапсырмаларды шеш
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Section count chips */}
+                      <div style={{ marginTop: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {(activeLesson.sections || []).map((sec, i) => {
+                          const cfg = {
+                            definition: { icon: "📘", color: "#a5b4fc", bg: "rgba(99,102,241,0.1)" },
+                            interactive_formula: { icon: "📐", color: "var(--accent)", bg: "rgba(16,212,160,0.08)" },
+                            remember: { icon: "⚡", color: "#fbbf24", bg: "rgba(245,158,11,0.08)" },
+                            example_steps: { icon: "🔢", color: "var(--text-muted)", bg: "rgba(255,255,255,0.05)" },
+                          }[sec.type] || { icon: "•", color: "var(--text-muted)", bg: "rgba(255,255,255,0.04)" };
+                          return (
+                            <div key={i} style={{ padding: "3px 10px", borderRadius: 50, background: cfg.bg, fontSize: 11, color: cfg.color, fontWeight: 600 }}>
+                              {cfg.icon} {sec.title}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Section cards */}
+                    {(activeLesson.sections || []).map((sec, i) => {
+                      const key = `${activeLesson.id}-sec-${i}`;
+
+                      // DEFINITION
+                      if (sec.type === "definition") return (
+                        <div key={key} style={{ background: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.18)", borderRadius: 16, overflow: "hidden" }}>
+                          <div style={{ padding: "10px 18px", borderBottom: "1px solid rgba(99,102,241,0.12)", background: "rgba(99,102,241,0.06)", display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 15 }}>📘</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#a5b4fc", textTransform: "uppercase", letterSpacing: "0.12em" }}>{sec.title}</span>
+                          </div>
+                          <div style={{ padding: "16px 20px" }}>
+                            {(sec.content||[]).map((c, j) => (
+                              <div key={j} style={{ fontSize: 14, lineHeight: 1.75, color: "var(--text)", marginBottom: j < (sec.content.length-1) ? 8 : 0, paddingLeft: 12, borderLeft: "2px solid rgba(99,102,241,0.25)" }}
+                                dangerouslySetInnerHTML={{ __html: renderMixed(c) }} />
+                            ))}
+                            <div style={{ marginTop: 14 }}>
+                              <TheoryAIExplainer context={sec.content?.join(" ") || ""} lessonTitle={activeLesson.title} />
+                            </div>
+                          </div>
+                        </div>
+                      );
+
+                      // FORMULA
+                      if (sec.type === "interactive_formula") return (
+                        <div key={key}>
+                          <FormulaBlock title={sec.title} formula={sec.formula} />
+                          <div style={{ marginTop: 8 }}>
+                            <TheoryAIExplainer context={`Формула: ${sec.formula}`} lessonTitle={activeLesson.title} />
+                          </div>
+                        </div>
+                      );
+
+                      // REMEMBER
+                      if (sec.type === "remember") return (
+                        <div key={key} style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: 16, overflow: "hidden" }}>
+                          <div style={{ padding: "10px 18px", borderBottom: "1px solid rgba(245,158,11,0.12)", background: "rgba(245,158,11,0.05)", display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ fontSize: 15 }}>⚡</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#fbbf24", textTransform: "uppercase", letterSpacing: "0.12em" }}>{sec.title}</span>
+                          </div>
+                          <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+                            {(sec.content||[]).map((c, j) => (
+                              <div key={j} style={{ display: "flex", gap: 12, alignItems: "flex-start", padding: "10px 14px", background: "rgba(245,158,11,0.05)", borderRadius: 10, border: "1px solid rgba(245,158,11,0.1)" }}>
+                                <span style={{ color: "#fbbf24", fontSize: 16, flexShrink: 0, marginTop: 1 }}>▸</span>
+                                <div style={{ fontSize: 14, color: "var(--text)", lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: renderMixed(c) }} />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+
+                      // EXAMPLE STEPS — step-through
+                      if (sec.type === "example_steps") return (
+                        <StepThroughExample key={key} sec={sec} />
+                      );
+
+                      return null;
+                    })}
+
+                    {/* Examples from legacy field */}
+                    {(activeLesson.examples || []).length > 0 && (
+                      <div style={{ background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: 16, overflow: "hidden" }}>
+                        <div style={{ padding: "10px 18px", borderBottom: "1px solid rgba(99,102,241,0.1)", display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 15 }}>💡</span>
+                          <span style={{ fontSize: 11, fontWeight: 700, color: "#a5b4fc", textTransform: "uppercase", letterSpacing: "0.12em" }}>Қосымша мысалдар</span>
+                        </div>
+                        <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+                          {activeLesson.examples.map((ex, ei) => (
+                            <div key={ei} style={{ padding: "14px 16px", background: "rgba(0,0,0,0.2)", borderRadius: 12 }}>
+                              <div style={{ fontSize: 15, color: "white", marginBottom: 10 }} dangerouslySetInnerHTML={{ __html: renderLatexSafe(ex.question) }} />
+                              {(ex.steps||[]).map((s, si) => (
+                                <div key={si} style={{ display: "flex", gap: 10, marginBottom: 6, fontSize: 13, color: "var(--text-muted)" }}>
+                                  <span style={{ color: "var(--text-dim)" }}>{si+1}.</span>
+                                  <span dangerouslySetInnerHTML={{ __html: renderLatexSafe(s) }} />
+                                </div>
+                              ))}
+                              {ex.answer && (
+                                <div style={{ marginTop: 8, padding: "6px 12px", background: "rgba(16,212,160,0.07)", borderRadius: 8, fontSize: 13, color: "var(--accent)", fontWeight: 600 }}>
+                                  = <span dangerouslySetInnerHTML={{ __html: renderLatexSafe(ex.answer) }} />
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Bottom navigation */}
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, paddingTop: 8 }}>
+                      {prevLesson ? (
+                        <button onClick={() => onOpenLesson(grade, prevLesson.id)} className="btn-ghost"
+                          style={{ borderRadius: 12, padding: "12px 20px", fontSize: 13, textAlign: "left", flex: 1 }}>
+                          <div style={{ fontSize: 10, color: "var(--text-dim)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.1em" }}>← Алдыңғы</div>
+                          <div style={{ color: "var(--text-muted)", fontWeight: 600 }}>{prevLesson.title}</div>
+                        </button>
+                      ) : <div style={{ flex: 1 }} />}
+
+                      {nextLesson ? (
+                        <button onClick={() => onOpenLesson(grade, nextLesson.id)} className="btn-ghost"
+                          style={{ borderRadius: 12, padding: "12px 20px", fontSize: 13, textAlign: "right", flex: 1 }}>
+                          <div style={{ fontSize: 10, color: "var(--text-dim)", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.1em" }}>Келесі →</div>
+                          <div style={{ color: "var(--text-muted)", fontWeight: 600 }}>{nextLesson.title}</div>
+                        </button>
+                      ) : (
+                        <button onClick={() => markDone(activeLesson.id)}
+                          className="btn-accent" style={{ borderRadius: 12, padding: "12px 20px", fontSize: 13, flex: 1 }}>
+                          ✓ Тақырыпты аяқта
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 400, color: "var(--text-muted)", gap: 12 }}>
+                    <div style={{ fontSize: 48 }}>📖</div>
+                    <div style={{ fontSize: 15 }}>Сол жақтан тақырып таңдаңыз</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // TOPICS VIEW
+      // ============================================================
+      const TopicsView = ({ grade, onBack, onPickTopic }) => {
+        const topics = TASK_BANK[grade] || {};
+        
+        return (
+          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "90px 24px 60px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+              <button onClick={onBack} className="btn-ghost" style={{ borderRadius: 50, padding: "8px 16px", fontSize: 13 }}>← Артқа</button>
+              <h1 style={{ fontSize: 22, fontWeight: 800, color: "white", margin: 0 }}>{grade}-сынып тақырыптары</h1>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+              {Object.entries(topics).map(([key, topicData]) => {
+                const total = (topicData.easy?.length||0)+(topicData.medium?.length||0)+(topicData.hard?.length||0);
+                const raw = localStorage.getItem(`aqylai_progress_${grade}_${key}`);
+                let solved = 0, zpd = 0;
+                if (raw) { const p = JSON.parse(raw); solved = p.solved||0; zpd = p.zpd||0; }
+                const percent = total ? Math.round((solved/total)*100) : 0;
+
+                return (
+                  <button key={key} onClick={() => onPickTopic(key)} className="topic-card" style={{ padding: 22, textAlign: "left" }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: "white", marginBottom: 8 }}>{topicData.title}</div>
+                    <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 4 }}>{solved}/{total} тапсырма</div>
+                    <div className="progress-bar" style={{ marginBottom: 8, height: 5 }}>
+                      <div className="progress-fill" style={{ width: `${percent}%`, height: "100%" }} />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11 }}>
+                      <span style={{ color: "var(--text-muted)" }}>{percent}% аяқталды</span>
+                      <span style={{ color: "var(--accent2)" }}>🧠 ZPD: {zpd}%</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // TASKS VIEW
+      // ============================================================
+      const TasksView = ({ grade, topic, onBack }) => {
+        const [history, setHistory] = useState({});
+        const topicData = TASK_BANK[grade]?.[topic];
+        const levels = ["easy", "medium", "hard"];
+        const [levelIndex, setLevelIndex] = useState(0);
+        const [current, setCurrent] = useState(0);
+        const [correctCount, setCorrectCount] = useState(0);
+        const [streak, setStreak] = useState(0);
+        const [lastAnswer, setLastAnswer] = useState("");
+        const [zpdScore, setZpdScore] = useState(0);
+
+        if (!topicData) return <div style={{ padding: 40, color: "var(--text-muted)" }}>Бұл тақырыпта тапсырма жоқ.</div>;
+
+        const level = levels[levelIndex];
+        const tasks = topicData[level] || [];
+        const totalTasks = (topicData.easy?.length||0)+(topicData.medium?.length||0)+(topicData.hard?.length||0);
+        const answered = Object.keys(history).length;
+        const correct = Object.values(history).filter(h=>h.correct).length;
+        const accuracy = answered > 0 ? correct/answered : 0;
+        const zpdPercent = Math.min(100, Math.round(accuracy * (levelIndex+1) * 33));
+        const solvedCount = Object.values(history).filter(h=>h.correct).length;
+        const percent = totalTasks > 0 ? Math.round((solvedCount/totalTasks)*100) : 0;
+
+        const levelBadgeClass = level === "easy" ? "badge-easy" : level === "medium" ? "badge-medium" : "badge-hard";
+        const levelLabel = { easy: "Жеңіл", medium: "Орташа", hard: "Қиын" }[level];
+
+        const updateLevel = (isCorrect) => {
+          const ns = isCorrect ? streak+1 : streak-1;
+          setStreak(ns);
+          if (ns >= 2 && levelIndex < 2) { setLevelIndex(p=>p+1); setStreak(0); setCurrent(0); }
+          if (ns <= -2 && levelIndex > 0) { setLevelIndex(p=>p-1); setStreak(0); setCurrent(0); }
+        };
+
+        const onCheck = (ok) => {
+          if (ok) { setCorrectCount(p=>p+1); setZpdScore(p=>p+(levelIndex+1)); }
+          setHistory(prev => ({ ...prev, [tasks[current].id]: { answer: lastAnswer, correct: ok } }));
+          updateLevel(ok);
+        };
+
+        const next = () => { if (history[tasks[current].id] && current < tasks.length-1) setCurrent(i=>i+1); };
+        const prev = () => { if (current > 0) setCurrent(i=>i-1); };
+
+        useEffect(() => {
+          localStorage.setItem(`aqylai_progress_${grade}_${topic}`, JSON.stringify({ solved: correctCount, total: totalTasks, zpd: zpdPercent }));
+        }, [correctCount, zpdPercent, grade, topic]);
+
+        return (
+          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "90px 24px 60px" }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+              <button onClick={onBack} className="btn-ghost" style={{ borderRadius: 50, padding: "8px 16px", fontSize: 13 }}>← Артқа</button>
+              <h1 style={{ fontSize: 20, fontWeight: 800, color: "white", margin: 0 }}>{grade}-сынып • {topicData.title}</h1>
+              <div className={levelBadgeClass} style={{ marginLeft: "auto", padding: "5px 14px", borderRadius: 50, fontSize: 12, fontWeight: 700 }}>{levelLabel}</div>
+            </div>
+
+            {/* Progress bars */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+              <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 14, padding: "14px 18px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>
+                  <span>📈 Жалпы прогресс</span><span>{percent}%</span>
+                </div>
+                <div className="progress-bar" style={{ height: 6 }}>
+                  <div className="progress-fill" style={{ width: `${percent}%`, height: "100%" }} />
+                </div>
+              </div>
+              <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 14, padding: "14px 18px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-muted)", marginBottom: 8 }}>
+                  <span>🧠 ZPD индекс</span><span>{zpdPercent}%</span>
+                </div>
+                <div className="progress-bar" style={{ height: 6 }}>
+                  <div style={{ height: "100%", borderRadius: 2, width: `${zpdPercent}%`, transition: "width 0.6s ease",
+                    background: zpdPercent < 40 ? "#ef4444" : zpdPercent < 70 ? "#f59e0b" : "var(--accent)" }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Main grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 20, alignItems: "start" }}>
+              {/* Left: task */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                {/* Task nav */}
+                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 14 }}>
+                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                    {current+1} / {tasks.length} тапсырма
+                  </span>
+                  <div style={{ flex: 1, height: 3, background: "var(--bg-card2)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{ height: "100%", background: "var(--accent)", width: `${((current+1)/tasks.length)*100}%`, transition: "width 0.3s ease" }} />
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={prev} disabled={current===0} className="btn-ghost"
+                      style={{ borderRadius: 8, padding: "4px 12px", fontSize: 13, opacity: current===0?0.3:1 }}>←</button>
+                    <button onClick={next} disabled={!history[tasks[current]?.id] || current===tasks.length-1}
+                      className={history[tasks[current]?.id] && current<tasks.length-1 ? "btn-accent" : "btn-ghost"}
+                      style={{ borderRadius: 8, padding: "4px 12px", fontSize: 13, opacity: (!history[tasks[current]?.id] || current===tasks.length-1)?0.3:1 }}>→</button>
+                  </div>
+                </div>
+
+                <TaskCard idx={current} task={tasks[current]} onCheck={onCheck} onAnswerChange={setLastAnswer} historyEntry={history[tasks[current]?.id]} />
+              </div>
+
+              {/* Right: AI */}
+              <div style={{ position: "sticky", top: 80 }}>
+                <AssistantPanel task={tasks[current]} userAnswer={lastAnswer} />
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // ============================================================
+      // ABOUT VIEW
+      // ============================================================
+      const AboutView = ({ onBack }) => (
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "100px 24px 60px" }}>
+          <button onClick={onBack} className="btn-ghost" style={{ borderRadius: 50, padding: "8px 16px", fontSize: 13, marginBottom: 32 }}>← Артқа</button>
+          <h1 style={{ fontSize: 40, fontWeight: 800, color: "white", letterSpacing: "-0.03em", marginBottom: 20 }}>AqylAI туралы</h1>
+          <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8, maxWidth: 700, marginBottom: 32 }}>
+            AqylAI — жасанды интеллектке негізделген бейімделмелі оқу жүйесі. Платформа оқушының деңгейін талдап, тапсырмаларды автоматты түрде EASY → MEDIUM → HARD деңгейлері арасында бейімдейді.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            {[
+              { t: "Біздің мақсатымыз", d: "Қазақстан оқушыларына сапалы, интеллектуалды және қолжетімді дайындық платформасын ұсыну." },
+              { t: "Негізгі технология", d: "ZPD индексі, адаптивті алгоритм және GitHub Models API арқылы AI көмекші." },
+            ].map((c,i) => (
+              <div key={i} style={{ background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 16, padding: 24 }}>
+                <div style={{ fontWeight: 700, fontSize: 16, color: "white", marginBottom: 10 }}>{c.t}</div>
+                <div style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.7 }}>{c.d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      // ============================================================
+      // THEORY SECTION CARD (landing)
+      // ============================================================
+      const LessonCard = ({ lesson, onClick }) => (
+        <div onClick={onClick} className="topic-card" style={{ padding: 20, cursor: "pointer" }}>
+          <div style={{ fontWeight: 600, fontSize: 14, color: "white", marginBottom: 6 }}>{lesson.title}</div>
+          {lesson.summary && <div style={{ fontSize: 12, color: "var(--text-muted)" }}>{lesson.summary}</div>}
+        </div>
+      );
+
+      // ============================================================
+      // MAIN APP
+      // ============================================================
+      function AqyAIApp() {
+        const router = useRouterMock();
+        const [gradeModal, setGradeModal] = useState(false);
+
+        useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, []);
+
+        const atRoot = router.path === "/";
+        const atProfile = router.path === "/profile";
+        const atAbout = router.path === "/about";
+
+        const gradeMatch = router.path.match(/\/c\/aqylai\/grade-(\d+)/);
+        const selectedGrade = gradeMatch ? Number(gradeMatch[1]) : null;
+
+        const topicMatch = router.path.match(/\/topic-([^\/]+)/);
+        const selectedTopic = topicMatch ? decodeURIComponent(topicMatch[1]) : null;
+
+        const isTopicsPage = /\/topics$/.test(router.path);
+
+        const theoryMatch = router.path.match(/^\/c\/aqylai\/theory-(\d+)(?:\/([\w-]+))?$/);
+        const theoryGrade = theoryMatch ? Number(theoryMatch[1]) : null;
+        const theoryLessonId = theoryMatch?.[2] || (theoryGrade ? localStorage.getItem(`aqylai_theory_last_${theoryGrade}`) : null);
+
+        const goTopics = (grade) => {
+          router.push(`/c/aqylai/grade-${grade}/topics`);
+          setGradeModal(false);
+          setTimeout(() => window.scrollTo({ top: 0, behavior: "instant" }), 0);
+        };
+
+        const goTheory = () => {
+          const g = Number(localStorage.getItem("aqylai_grade") || 8);
+          router.push(makeTheoryPath(g));
+        };
+
+        return (
+          <div style={{ minHeight: "100vh", color: "var(--text)" }}>
+            <TopNav router={router} />
+            <GradePickerModal open={gradeModal} onClose={() => setGradeModal(false)} onPick={goTopics} />
+
+            {/* LANDING */}
+            {atRoot && (
+              <>
+                <Hero onStart={() => setGradeModal(true)} />
+                <FeaturesSection />
+                <ResultsSection />
+                <ContactSection />
+                <Footer router={router} />
+              </>
+            )}
+
+            {/* PROFILE */}
+            {atProfile && (
+              <ProfileView
+                onBack={() => router.push("/")}
+                onGoTasks={(g) => goTopics(g)}
+              />
+            )}
+
+            {/* ABOUT */}
+            {atAbout && <AboutView onBack={() => router.push("/")} />}
+
+            {/* THEORY */}
+            {theoryGrade && (
+              <TheoryView
+                grade={theoryGrade}
+                lessonId={theoryLessonId}
+                onBack={() => router.push("/")}
+                onOpenLesson={(g, id) => router.push(makeTheoryLessonPath(g, id))}
+                onPickGrade={(g) => router.push(makeTheoryPath(g))}
+                onGoTasks={(g, topicKey) => router.push(`/c/aqylai/grade-${g}/topic-${encodeURIComponent(topicKey)}`)}
+              />
+            )}
+
+            {/* TOPICS */}
+            {selectedGrade && isTopicsPage && !selectedTopic && (
+              <TopicsView
+                grade={selectedGrade}
+                onBack={() => router.push("/")}
+                onPickTopic={(t) => router.push(`/c/aqylai/grade-${selectedGrade}/topic-${encodeURIComponent(t)}`)}
+              />
+            )}
+
+            {/* TASKS */}
+            {selectedGrade && selectedTopic && (
+              <TasksView
+                grade={selectedGrade}
+                topic={selectedTopic}
+                onBack={() => router.push(`/c/aqylai/grade-${selectedGrade}/topics`)}
+              />
+            )}
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<AqyAIApp />);
+    </script>
+  </body>
+</html>
